@@ -16,7 +16,7 @@ config :bet_manager, BetManager.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :bet_manager, BetManagerWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 80],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

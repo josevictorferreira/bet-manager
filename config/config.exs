@@ -12,10 +12,13 @@ config :bet_manager,
 
 # Configures the endpoint
 config :bet_manager, BetManagerWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "0.0.0.0"],
   secret_key_base: "gAJNKWkTOZXmCZXZ1z0ihB9MJTZ/Tz17kgxypY2aUcogLGlp5quw6xYvlW6papCG",
   render_errors: [view: BetManagerWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: BetManager.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :bet_manager, BetManager.Endpoint,
+  http: [port: System.get_env("PORT") || 80]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -8,4 +8,9 @@ defmodule BetManagerWeb.Router do
   scope "/api", BetManagerWeb do
     pipe_through :api
   end
+
+  scope "/sessions" do
+    post "/sign_in", BetManagerWeb.SessionController, :create
+    delete "/sign_out", BetManagerWeb.SessionController, :delete
+  end
 end

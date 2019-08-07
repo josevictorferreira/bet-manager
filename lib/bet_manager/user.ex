@@ -1,8 +1,12 @@
 defmodule BetManager.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias BetManager.User
+  alias BetManager.Repo
+  alias BetManager.Services.Authenticator
 
   schema "users" do
+    has_many :auth_tokens, BetManager.AuthToken
     field :email, :string
     field :password_hash, :string
     field :password, :string, virtual: true
@@ -11,12 +15,32 @@ defmodule BetManager.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
+  def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
     |> unique_constraint(:email, downcase: true)
     |> put_password_hash()
+  end
+
+  def sign_in(email, password) do
+    case Comeonin.Bcrypt.check_pass(BetManager.Repo.get_by(User, email: email), password) do
+      {:ok, user} ->
+        token = Authenticator.generate_token(user)
+        Repo.insert(Ecto.build_assoc(user, :auth_tokens, %{token: token}))
+      err -> err
+    end
+  end
+
+  def sign_out(conn) do
+    case Authenticator.get_auth_token(conn) do
+      {:ok, token} ->
+        case BetManager.Repo.get_by(AuthToken, %{token: token}) do
+          nil -> {:error, :not_found}
+          auth_token -> Repo.delete(auth_token)
+        end
+      error -> error
+    end
   end
 
   def put_password_hash(changeset) do
