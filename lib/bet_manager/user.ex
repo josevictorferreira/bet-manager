@@ -43,6 +43,16 @@ defmodule BetManager.User do
     end
   end
 
+  def revoke(conn) do
+    case Authenticator.get_auth_token(conn) do
+      {:ok, token} ->
+        case BetManager.Repo.get_by(BetManager.AuthToken, %{token: token}) do
+          nil -> {:error, :not_found}
+          auth_token -> Repo.update(Ecto.Changeset.change(auth_token, revoked: true, revoked_at: DateTime.truncate(DateTime.utc_now, :second)))
+        end
+    end
+  end
+
   def put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->

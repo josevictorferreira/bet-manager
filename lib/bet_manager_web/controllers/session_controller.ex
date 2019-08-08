@@ -20,4 +20,11 @@ defmodule BetManagerWeb.SessionController do
       {:ok, _} -> conn |> send_resp(204, "")
     end
   end
+
+  def revoke(conn, _) do
+    case User.revoke(conn) do
+      {:error, reason} -> conn |> send_resp(400, reason)
+      {:ok, _} -> conn |> send_resp(200, "Revoked")
+    end
+  end
 end
