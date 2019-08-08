@@ -35,7 +35,7 @@ defmodule BetManager.User do
   def sign_out(conn) do
     case Authenticator.get_auth_token(conn) do
       {:ok, token} ->
-        case BetManager.Repo.get_by(AuthToken, %{token: token}) do
+        case BetManager.Repo.get_by(BetManager.AuthToken, %{token: token}) do
           nil -> {:error, :not_found}
           auth_token -> Repo.delete(auth_token)
         end

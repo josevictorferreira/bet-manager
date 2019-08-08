@@ -3,6 +3,7 @@ defmodule BetManagerWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug BetManager.Plugs.Authenticate
   end
 
   scope "/api", BetManagerWeb do
