@@ -18,7 +18,7 @@ config :bet_manager, BetManagerWeb.Endpoint,
   pubsub: [name: BetManager.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :bet_manager, BetManager.Endpoint,
-  http: [port: System.get_env("PORT") || 80]
+  http: [port: System.get_env("PORT") || 4000]
 
 # Configures Elixir's Logger
 config :logger, :console,

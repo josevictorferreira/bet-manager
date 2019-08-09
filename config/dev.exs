@@ -16,7 +16,7 @@ config :bet_manager, BetManager.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :bet_manager, BetManagerWeb.Endpoint,
-  http: [port: 80],
+  http: [port: System.get_env("PORT") || 4000],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -57,8 +57,8 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :bet_manager, BetManager.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "bet_manager_dev",
-  hostname: "localhost",
-  pool_size: 10
+  username: System.get_env("DB_USER") || "postgres",
+  password: System.get_env("DB_PASSWORD") || "postgres",
+  database: System.get_env("DB_DATABASE") || "bet_manager_dev",
+  hostname: System.get_env("DB_HOST") || "localhost",
+  pool_size: (System.get_env("DB_POOL") |> String.to_integer) || 10

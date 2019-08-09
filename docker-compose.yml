@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  phoenix:
+    build:
+      context: .
+      args:
+        - phoenix_port=${PORT}
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      PORT: "${PORT}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_DATABASE_TEST: "${DB_DATABASE_TEST}"
+      DB_HOST: "${DB_HOST}"
+      DB_POOL: "${DB_POOL}"
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

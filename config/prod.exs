@@ -53,3 +53,10 @@ config :logger, level: :info
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"
+
+config :bet_manager, BetManager.Repo,
+  username: System.get_env("DB_USER") || "postgres",
+  password: System.get_env("DB_PASSWORD") || "postgres",
+  database: System.get_env("DB_DATABASE") || "bet_manager_prod",
+  hostname: System.get_env("DB_HOST") || "localhost",
+  pool_size: (System.get_env("DB_POOL") |> String.to_integer) || 10
