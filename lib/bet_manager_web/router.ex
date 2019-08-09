@@ -10,14 +10,22 @@ defmodule BetManagerWeb.Router do
   end
 
   scope "/api", BetManagerWeb do
-    pipe_through :api
+    pipe_through [:api, :authenticate]
 
-    post "/sessions/sign_in", SessionController, :create
     scope "/sessions" do
-      pipe_through :authenticate
       delete "/sign_out", SessionController, :delete
       post "/revoke", SessionController, :revoke
     end
+    resources "/users", UserController, except: [:new, :create, :index]
+  end
+
+  scope "/api", BetManagerWeb do
+    pipe_through :api
+
+    scope "/sessions" do
+      post "/sign_in", SessionController, :create
+    end
+    post "/users", UserController, :create
   end
 
 end

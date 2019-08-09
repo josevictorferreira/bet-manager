@@ -62,4 +62,16 @@ defmodule BetManager.User do
         changeset
     end
   end
+
+  def list_users do
+    Repo.all(User)
+  end
+
+  def get_user!(id), do: Repo.get!(User, id)
+
+  def create_user(attrs \\ %{}) do
+    %User{}
+    |> User.changeset(attrs)
+    |> Repo.insert()
+  end
 end
