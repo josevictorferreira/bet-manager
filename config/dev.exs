@@ -56,9 +56,14 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+db_pool = case System.get_env("DB_POOL") do
+  nil -> 10
+  _ -> String.to_integer(System.get_env("DB_POOL"))
+end
+
 config :bet_manager, BetManager.Repo,
   username: System.get_env("DB_USER") || "postgres",
   password: System.get_env("DB_PASSWORD") || "postgres",
   database: System.get_env("DB_DATABASE") || "bet_manager_dev",
   hostname: System.get_env("DB_HOST") || "localhost",
-  pool_size: (System.get_env("DB_POOL") |> String.to_integer) || 10
+  pool_size: db_pool

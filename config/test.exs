@@ -17,9 +17,14 @@ config :bet_manager, BetManagerWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
+db_pool = case System.get_env("DB_POOL") do
+  nil -> 10
+  _ -> String.to_integer(System.get_env("DB_POOL"))
+end
+
 config :bet_manager, BetManager.Repo,
   username: System.get_env("DB_USER") || "postgres",
   password: System.get_env("DB_PASSWORD") || "postgres",
   database: System.get_env("DB_DATABASE_TEST") || "bet_manager_test",
   hostname: System.get_env("DB_HOST") || "localhost",
-  pool_size: (System.get_env("DB_POOL") |> String.to_integer) || 10
+  pool_size: db_pool
