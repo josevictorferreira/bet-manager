@@ -3,6 +3,7 @@ defmodule BetManager.AuthToken do
   import Ecto.Changeset
   alias BetManager.AuthToken
   alias BetManager.User
+  alias BetManager.Repo
 
   schema "auth_tokens" do
     belongs_to :user, User
@@ -18,5 +19,10 @@ defmodule BetManager.AuthToken do
     |> cast(attrs, [:token])
     |> validate_required([:token])
     |> unique_constraint(:token)
+  end
+
+  def get_by_token(token) do
+    Repo.get_by(AuthToken, %{token: token})
+    |> Repo.preload(user: :auth_tokens)
   end
 end
