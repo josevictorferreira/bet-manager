@@ -74,4 +74,14 @@ defmodule BetManager.User do
     |> User.changeset(attrs)
     |> Repo.insert()
   end
+
+  def update_user(%User{} = user, attrs) do
+    user
+    |> User.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
+  end
 end

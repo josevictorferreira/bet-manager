@@ -18,4 +18,4 @@ RUN ["chmod", "+x", "./docker-entrypoint.sh"]
 
 RUN ["dos2unix", "docker-entrypoint.sh"]
 
-ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+CMD ["sh", "./docker-entrypoint.sh"]
