@@ -7,7 +7,7 @@ defmodule BetManager.User do
   alias BetManager.Services.Authenticator
 
   schema "users" do
-    has_many :auth_tokens, BetManager.AuthToken
+    has_many :auth_tokens, BetManager.AuthToken, on_delete: :delete_all
     field :email, :string
     field :password_hash, :string
     field :password, :string, virtual: true
