@@ -35,4 +35,13 @@ defmodule BetManagerWeb.Helpers do
   def is_signed_in?(conn) do
     conn.assigns[:signed_in]
   end
+
+  def translate_error({msg, opts}) do
+    String.replace(msg, "%{count}", to_string(opts[:count]))
+  end
+  def translate_error(msg), do: msg
+
+  def translate_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
+  end
 end

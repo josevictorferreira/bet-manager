@@ -8,7 +8,7 @@ defmodule BetManagerWeb.UserController do
         conn
         |> put_status(:ok)
         |> render("show.json", user)
-      {:error, _} -> conn |> send_default_error_resp()
+      {:error, reason} -> conn |> send_json_resp(%{"status" => "error", "message" => translate_errors(reason)})
     end
   end
 

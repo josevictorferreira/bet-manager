@@ -21,6 +21,8 @@ defmodule BetManager.User do
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
     |> unique_constraint(:email, downcase: true)
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_length(:password, min: 6)
     |> put_password_hash()
   end
 
