@@ -54,16 +54,6 @@ defmodule BetManager.User do
     end
   end
 
-  def current(conn) do
-    case Authenticator.get_auth_token(conn) do
-      {:ok, token} ->
-        case AuthToken.get_by_token(token) do
-          nil -> {:error, :not_found}
-          auth_token -> {:ok, auth_token.user}
-        end
-    end
-  end
-
   def put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->

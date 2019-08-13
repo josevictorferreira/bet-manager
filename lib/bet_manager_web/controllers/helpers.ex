@@ -17,4 +17,22 @@ defmodule BetManagerWeb.Helpers do
     |> put_resp_header("content-type", "application/json; charset=utf-8")
     |> send_resp(status_code, Poison.encode!(data))
   end
+
+  def current_user(conn) do
+    case is_signed_in?(conn) do
+      true -> {:ok, conn.assigns[:signed_user]}
+      _ -> {:error, :logged_out}
+    end
+  end
+
+  def current_user!(conn) do
+    case is_signed_in?(conn) do
+      true -> conn.assigns[:signed_user]
+      _ -> nil
+    end
+  end
+
+  def is_signed_in?(conn) do
+    conn.assigns[:signed_in]
+  end
 end

@@ -14,7 +14,7 @@ defmodule BetManagerWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => %{"password" => password}}) do
     user_id = String.to_integer(id)
-    case User.current(conn) do
+    case current_user(conn) do
       {:error, _} -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
       {:ok, current_user} ->
         case current_user.id do
@@ -30,7 +30,7 @@ defmodule BetManagerWeb.UserController do
 
   def show(conn, %{"id" => id}) do
     user_id = String.to_integer(id)
-    case User.current(conn) do
+    case current_user(conn) do
       {:error, _} -> conn |>  send_resp(200, Poison.encode!(%{"status" => "error"}))
       {:ok, current_user} ->
         case current_user.id do
@@ -44,7 +44,7 @@ defmodule BetManagerWeb.UserController do
 
   def delete(conn, %{"id" => id}) do
     user_id = String.to_integer(id)
-    case User.current(conn) do
+    case current_user(conn) do
       {:error, _} -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
       {:ok, current_user} ->
         case current_user.id do
