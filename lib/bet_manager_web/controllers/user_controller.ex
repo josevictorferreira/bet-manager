@@ -8,7 +8,7 @@ defmodule BetManagerWeb.UserController do
         conn
         |> put_status(:ok)
         |> render("show.json", user)
-      {:error, _} -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
+      {:error, _} -> conn |> send_default_error_resp()
     end
   end
 
@@ -23,7 +23,7 @@ defmodule BetManagerWeb.UserController do
             with {:ok, %User{} = user} <- User.update_user(user, %{"password" => password}) do
               render(conn, "show.json", user)
             end
-          _ -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
+          _ -> conn |> send_default_error_resp()
         end
     end
   end
@@ -37,7 +37,7 @@ defmodule BetManagerWeb.UserController do
           user_id ->
             user = User.get_user!(user_id)
             render(conn, "show.json", user)
-          _ -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
+          _ -> conn |> send_default_error_resp()
         end
     end
   end
@@ -51,9 +51,10 @@ defmodule BetManagerWeb.UserController do
           user_id ->
             user = User.get_user!(user_id)
             with {:ok, %User{} = user} <- User.delete_user(user) do
-              conn |> send_resp(200, Poison.encode!(%{"status" => "success"}))
+              conn |> send_default_success_resp()
             end
-          _ -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
+          _ ->
+            conn |> send_default_error_resp()
         end
     end
   end

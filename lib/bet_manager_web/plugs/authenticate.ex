@@ -1,5 +1,6 @@
 defmodule BetManager.Plugs.Authenticate do
   import Plug.Conn
+  import BetManagerWeb.Helpers
   alias BetManager.Services.Authenticator
   alias BetManager.Repo
   alias BetManager.AuthToken
@@ -24,6 +25,8 @@ defmodule BetManager.Plugs.Authenticate do
   end
 
   defp unauthorized(conn) do
-    conn |> send_resp(401, "Unauthorized") |> halt()
+    conn
+    |> send_json_resp(%{"status": "error", "message": "Unauthorized"})
+    |> halt()
   end
 end

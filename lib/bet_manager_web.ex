@@ -23,6 +23,7 @@ defmodule BetManagerWeb do
 
       import Plug.Conn
       import BetManagerWeb.Gettext
+      import BetManagerWeb.Helpers
       alias BetManagerWeb.Router.Helpers, as: Routes
     end
   end
