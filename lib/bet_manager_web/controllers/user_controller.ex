@@ -45,7 +45,7 @@ defmodule BetManagerWeb.UserController do
   def delete(conn, %{"id" => id}) do
     user_id = String.to_integer(id)
     case current_user(conn) do
-      {:error, _} -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
+      {:error, _} -> conn |> send_default_error_resp()
       {:ok, current_user} ->
         case current_user.id do
           user_id ->

@@ -60,4 +60,23 @@ defmodule BetManagerWeb.BookmakerController do
         conn |> render("index.json", %{data: bookmakers})
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    case current_user(conn) do
+      {:error, _} -> conn |> send_default_error_resp()
+      {:ok, current_user} ->
+        case Bookmaker.get_bookmaker!(id) do
+          nil -> conn |> send_default_error_resp()
+          bookmaker ->
+            bookmaker_user = bookmaker.id
+            case current_user.id do
+              bookmaker_user ->
+                with {:ok, %Bookmaker{} = bookmaker_deleted} <- Bookmaker.delete_bookmaker(bookmaker) do
+                  conn |> send_default_success_resp()
+                end
+              _ -> conn |> send_default_error_resp()
+            end
+        end
+    end
+  end
 end
