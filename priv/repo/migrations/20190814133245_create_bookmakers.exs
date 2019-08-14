@@ -3,8 +3,9 @@ defmodule BetManager.Repo.Migrations.CreateBookmakers do
 
   def change do
     create table(:bookmakers) do
-      add :name, :string
-      add :logo, :string
+      add :name, :string, null: false
+      add :logo, :string, null: false
+      add :user_id, references(:users, on_delete: :nothing), null: true
 
       timestamps()
     end

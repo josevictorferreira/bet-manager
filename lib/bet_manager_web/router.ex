@@ -17,6 +17,7 @@ defmodule BetManagerWeb.Router do
       post "/revoke", SessionController, :revoke
     end
     resources "/users", UserController, except: [:new, :create, :index, :edit]
+    resources "/bookmakers", BookmakerController, except: [:new, :edit]
   end
 
   scope "/api", BetManagerWeb do
