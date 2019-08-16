@@ -28,7 +28,7 @@ defmodule BetManager.Country do
 
   def list_countries_formatted do
     list_countries()
-    |> Enum.map(fn x -> %{"id" => x.id, "name" => x.name, "flag" => x.flag} end)
+    |> Enum.map(fn x -> %{code: x.code, name: x.name, flag: x.flag, region: region} end)
   end
 
   def get_country!(id), do: Repo.get!(Country, id)
