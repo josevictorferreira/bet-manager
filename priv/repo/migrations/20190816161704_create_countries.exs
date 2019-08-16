@@ -3,12 +3,14 @@ defmodule BetManager.Repo.Migrations.CreateCountries do
 
   def change do
     create table(:countries) do
-      add :name, :string
-      add :flag, :string
+      add :code, :string, null: false
+      add :name, :string, null: false
+      add :flag, :string, null: false
+      add :region, :string, null: false
 
       timestamps()
     end
 
-    create unique_index(:countries, [:name])
+    create unique_index(:countries, [:code])
   end
 end
