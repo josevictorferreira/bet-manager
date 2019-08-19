@@ -13,6 +13,7 @@ defmodule BetManagerWeb.Router do
     pipe_through [:api, :authenticate]
 
     get "/countries", CountryController, :index
+    get "/currencies", CurrencyController, :index
     scope "/sessions" do
       delete "/sign_out", SessionController, :delete
       post "/revoke", SessionController, :revoke

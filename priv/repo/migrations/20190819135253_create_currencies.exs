@@ -3,13 +3,17 @@ defmodule BetManager.Repo.Migrations.CreateCurrencies do
 
   def change do
     create table(:currencies) do
-      add :name, :string
-      add :symbol, :string
-      add :country_id, references(:countries, on_delete: :nothing)
+      add :code, :string, null: false
+      add :name, :string, null: false
+      add :name_plural, :string, null: false
+      add :decimal_digits, :integer, null: false
+      add :rounding, :integer, null: false
+      add :symbol, :string, null: false
+      add :country_code, references(:countries, on_delete: :nothing, type: :string, column: :code), null: false
 
       timestamps()
     end
 
-    create index(:currencies, [:country_id])
+    create index(:currencies, [:code])
   end
 end

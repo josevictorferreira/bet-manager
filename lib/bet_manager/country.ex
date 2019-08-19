@@ -3,8 +3,10 @@ defmodule BetManager.Country do
   import Ecto.Changeset
   alias BetManager.Country
   alias BetManager.Repo
+  alias BetManager.Currency
 
   schema "countries" do
+    has_many :currencies, Currency, on_delete: :delete_all
     field :flag, :string
     field :name, :string
     field :code, :string
@@ -28,7 +30,7 @@ defmodule BetManager.Country do
 
   def list_countries_formatted do
     list_countries()
-    |> Enum.map(fn x -> %{code: x.code, name: x.name, flag: x.flag, region: region} end)
+    |> Enum.map(fn x -> %{code: x.code, name: x.name, flag: x.flag, region: x.region} end)
   end
 
   def get_country!(id), do: Repo.get!(Country, id)

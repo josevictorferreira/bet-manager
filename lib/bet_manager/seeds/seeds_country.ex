@@ -6,18 +6,19 @@ defmodule BetManager.SeedsCountry do
       {:ok, data} ->
         IO.puts("Starting seeding country data.")
         data |> Enum.each(fn x -> Country.create_country(x) end)
+        hard_seed_data()
         IO.puts("Done seeding country data.")
       {:error, reason} ->
         IO.puts(reason)
     end
   end
 
-  def clear do
+  def clear! do
     Country.delete_all()
     IO.puts("Deleted all data in Country db.")
   end
 
-  def get_countries_from_api do
+  defp get_countries_from_api do
     case HTTPoison.get("https://restcountries.eu/rest/v2/all") do
       {:ok, result} ->
         {:ok, Poison.decode!(result.body)
@@ -34,5 +35,14 @@ defmodule BetManager.SeedsCountry do
                     region: x["region"]} end)}
       {:error, _} -> {:error, "Unable to reach Country API."}
     end
+  end
+
+  defp hard_seed_data do
+    Country.create_country(%{
+        code: "EU",
+        name: "European Union",
+        region: "Europe",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg"
+      })
   end
 end
