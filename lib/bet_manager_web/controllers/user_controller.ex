@@ -13,13 +13,13 @@ defmodule BetManagerWeb.UserController do
   end
 
   def update(conn, %{"id" => id, "user" => %{"password" => password}}) do
-    user_id = String.to_integer(id)
+    user_id = id |> String.to_integer()
     case current_user(conn) do
       {:error, _} -> conn |> send_resp(200, Poison.encode!(%{"status" => "error"}))
       {:ok, current_user} ->
         case current_user.id do
-          user_id ->
-            user = User.get_user!(user_id)
+          new_id when new_id == user_id ->
+            user = User.get_user!(new_id)
             with {:ok, %User{} = user} <- User.update_user(user, %{"password" => password}) do
               render(conn, "show.json", user)
             end
@@ -29,13 +29,13 @@ defmodule BetManagerWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user_id = String.to_integer(id)
+    user_id = id |> String.to_integer()
     case current_user(conn) do
       {:error, _} -> conn |>  send_resp(200, Poison.encode!(%{"status" => "error"}))
       {:ok, current_user} ->
         case current_user.id do
-          user_id ->
-            user = User.get_user!(user_id)
+          new_id when new_id == user_id ->
+            user = User.get_user!(new_id)
             render(conn, "show.json", user)
           _ -> conn |> send_default_error_resp()
         end
@@ -43,14 +43,14 @@ defmodule BetManagerWeb.UserController do
   end
 
   def delete(conn, %{"id" => id}) do
-    user_id = String.to_integer(id)
+    user_id = id |> String.to_integer()
     case current_user(conn) do
       {:error, _} -> conn |> send_default_error_resp()
       {:ok, current_user} ->
         case current_user.id do
-          user_id ->
-            user = User.get_user!(user_id)
-            with {:ok, %User{} = user} <- User.delete_user(user) do
+          new_id when new_id == user_id ->
+            user = User.get_user!(new_id)
+            with {:ok, %User{} = _} <- User.delete_user(user) do
               conn |> send_default_success_resp()
             end
           _ ->

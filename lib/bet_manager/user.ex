@@ -7,7 +7,7 @@ defmodule BetManager.User do
   alias BetManager.Services.Authenticator
 
   schema "users" do
-    has_many :auth_tokens, BetManager.AuthToken, on_delete: :delete_all
+    has_many :auth_tokens, AuthToken, on_delete: :delete_all
     field :email, :string
     field :password_hash, :string
     field :password, :string, virtual: true
@@ -38,7 +38,7 @@ defmodule BetManager.User do
   def sign_out(conn) do
     case Authenticator.get_auth_token(conn) do
       {:ok, token} ->
-        case BetManager.Repo.get_by(BetManager.AuthToken, %{token: token}) do
+        case BetManager.Repo.get_by(AuthToken, %{token: token}) do
           nil -> {:error, :not_found}
           auth_token -> Repo.delete(auth_token)
         end
@@ -49,7 +49,7 @@ defmodule BetManager.User do
   def revoke(conn) do
     case Authenticator.get_auth_token(conn) do
       {:ok, token} ->
-        case BetManager.Repo.get_by(BetManager.AuthToken, %{token: token}) do
+        case BetManager.Repo.get_by(AuthToken, %{token: token}) do
           nil -> {:error, :not_found}
           auth_token -> Repo.update(Ecto.Changeset.change(auth_token, revoked: true, revoked_at: DateTime.truncate(DateTime.utc_now, :second)))
         end

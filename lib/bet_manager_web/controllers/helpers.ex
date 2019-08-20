@@ -1,6 +1,5 @@
 defmodule BetManagerWeb.Helpers do
   import Plug.Conn
-  import Phoenix.Controller
 
   def send_default_error_resp(conn) do
     conn

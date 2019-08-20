@@ -4,6 +4,7 @@ defmodule BetManager.Bookmaker do
   import Ecto.Query, only: [from: 2]
   alias BetManager.Repo
   alias BetManager.Bookmaker
+  alias BetManager.User
 
   schema "bookmakers" do
     belongs_to :user, User
@@ -53,6 +54,6 @@ defmodule BetManager.Bookmaker do
   def bookmakers_by_user_formatted(user_id) do
     user_id
     |> Bookmaker.bookmakers_by_user()
-    |> Enum.map(fn x -> %{"id": x.id, "name": x.name, "logo": x.logo, "inserted_at": x.inserted_at, "updated_at": x.updated_at} end)
+    |> Enum.map(fn x -> %{id: x.id, name: x.name, logo: x.logo, inserted_at: x.inserted_at, updated_at: x.updated_at} end)
   end
 end

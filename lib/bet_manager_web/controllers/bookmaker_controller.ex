@@ -22,7 +22,7 @@ defmodule BetManagerWeb.BookmakerController do
         |> Bookmaker.get_bookmaker!()
         bookmaker_user = bookmaker.user_id
         case user.id do
-          bookmaker_user ->
+          new_user when new_user == bookmaker_user ->
             case Bookmaker.update_bookmaker(bookmaker, %{"name" => name, "logo" => logo}) do
               {:ok, %Bookmaker{} = new_bookmaker} ->
                 conn
@@ -70,8 +70,8 @@ defmodule BetManagerWeb.BookmakerController do
           bookmaker ->
             bookmaker_user = bookmaker.id
             case current_user.id do
-              bookmaker_user ->
-                with {:ok, %Bookmaker{} = bookmaker_deleted} <- Bookmaker.delete_bookmaker(bookmaker) do
+              new_user when new_user == bookmaker_user ->
+                with {:ok, %Bookmaker{} = _} <- Bookmaker.delete_bookmaker(bookmaker) do
                   conn |> send_default_success_resp()
                 end
               _ -> conn |> send_default_error_resp()

@@ -63,4 +63,8 @@ defmodule BetManager.Currency do
   def delete_currency(%Currency{} = currency) do
     Repo.delete(currency)
   end
+
+  def delete_all do
+    Repo.delete_all(Currency)
+  end
 end

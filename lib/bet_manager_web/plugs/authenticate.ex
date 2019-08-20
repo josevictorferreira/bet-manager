@@ -7,7 +7,7 @@ defmodule BetManager.Plugs.Authenticate do
 
   def init(default), do: default
 
-  def call(conn, default) do
+  def call(conn, _) do
     case Authenticator.get_auth_token(conn) do
       {:ok, token} ->
         case Repo.get_by(AuthToken, %{token: token, revoked: false}) |> Repo.preload(:user) do
@@ -26,7 +26,7 @@ defmodule BetManager.Plugs.Authenticate do
 
   defp unauthorized(conn) do
     conn
-    |> send_json_resp(%{"status": "error", "message": "Unauthorized"})
+    |> send_json_resp(%{status: "error", message: "Unauthorized"})
     |> halt()
   end
 end

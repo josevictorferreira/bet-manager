@@ -8,7 +8,7 @@ defmodule BetManager.Services.Authenticator do
 
   def verify_token(token) do
     case Phoenix.Token.verify(@secret, @seed, token, max_age: 86400) do
-      {:ok, id} -> {:ok, token}
+      {:ok, _} -> {:ok, token}
       error -> error
     end
   end

@@ -6,7 +6,7 @@ defmodule BetManager.Country do
   alias BetManager.Currency
 
   schema "countries" do
-    has_many :currencies, Currency, on_delete: :delete_all
+    has_many :currencies, Currency, on_delete: :delete_all, foreign_key: :country_code
     field :flag, :string
     field :name, :string
     field :code, :string
