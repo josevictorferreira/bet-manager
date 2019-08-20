@@ -19,7 +19,8 @@ defmodule BetManager.SeedsCountry do
   end
 
   defp get_countries_from_api do
-    case HTTPoison.get("https://restcountries.eu/rest/v2/all") do
+    data_api = Application.get_env(:bet_manager, BetManager.SeedsCountry)[:seed_data]
+    case  HTTPoison.get(data_api) do
       {:ok, result} ->
         {:ok, Poison.decode!(result.body)
               |> Enum.filter( fn x ->

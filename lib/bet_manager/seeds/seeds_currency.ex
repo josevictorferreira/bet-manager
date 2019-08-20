@@ -18,7 +18,8 @@ defmodule BetManager.SeedsCurrency do
   end
 
   defp get_currencies_from_api do
-    case HTTPoison.get("https://gist.githubusercontent.com/josevictorferreira/d16cbcc31c0459ef87d16b6ccd6cbf98/raw/6b648e7126fd0ff28ea90f87c10748304a5264cb/world_currencies.json") do
+    data_api = Application.get_env(:bet_manager, BetManager.SeedsCurrency)[:seed_data]
+    case HTTPoison.get(data_api) do
       {:ok, result} ->
         {:ok, Poison.decode!(result.body)
               |> Enum.map(fn {_, x} ->
