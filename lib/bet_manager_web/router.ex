@@ -18,6 +18,7 @@ defmodule BetManagerWeb.Router do
       delete "/sign_out", SessionController, :delete
       post "/revoke", SessionController, :revoke
     end
+    resources "/accounts", AccountController, except: [:new, :edit]
     resources "/users", UserController, except: [:new, :create, :index, :edit]
     resources "/bookmakers", BookmakerController, except: [:new, :edit]
   end

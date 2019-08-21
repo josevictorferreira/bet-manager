@@ -17,17 +17,23 @@ defmodule BetManager.Bookmaker do
   @doc false
   def changeset(bookmaker, attrs) do
     bookmaker
-    |> cast(attrs, [:name, :logo])
-    |> validate_required([:name, :logo])
+    |> cast(attrs, [:name, :logo, :user_id])
+    |> validate_required([:name, :logo, :user_id])
     |> unique_constraint(:name)
-    |> validate_format(:logo, ~r/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*\.(?:jpg|gif|png))(?:\?([^#]*))?(?:#(.*))?/)
+    |> validate_format(
+      :logo,
+      ~r/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*\.(?:jpg|gif|png))(?:\?([^#]*))?(?:#(.*))?/
+    )
   end
 
   def list_bookmakers do
     Repo.all(Bookmaker)
   end
 
-  def get_bookmaker!(id), do: Repo.get!(Bookmaker, id)
+  def get_bookmaker!(id) do
+    Repo.get!(Bookmaker, id)
+    |> Repo.preload([:user])
+  end
 
   def create_bookmaker(attrs \\ %{}) do
     %Bookmaker{}
@@ -46,14 +52,24 @@ defmodule BetManager.Bookmaker do
   end
 
   def bookmakers_by_user(user_id) do
-    query = from r in Bookmaker,
-      where: r.user_id == ^user_id or is_nil(r.user_id)
+    query =
+      from r in Bookmaker,
+        where: r.user_id == ^user_id or is_nil(r.user_id)
+
     query |> Repo.all()
   end
 
   def bookmakers_by_user_formatted(user_id) do
     user_id
     |> Bookmaker.bookmakers_by_user()
-    |> Enum.map(fn x -> %{id: x.id, name: x.name, logo: x.logo, inserted_at: x.inserted_at, updated_at: x.updated_at} end)
+    |> Enum.map(fn x ->
+      %{
+        id: x.id,
+        name: x.name,
+        logo: x.logo,
+        inserted_at: x.inserted_at,
+        updated_at: x.updated_at
+      }
+    end)
   end
 end

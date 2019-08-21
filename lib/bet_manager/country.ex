@@ -5,11 +5,11 @@ defmodule BetManager.Country do
   alias BetManager.Repo
   alias BetManager.Currency
 
+  @primary_key{:code, :string, autogenerate: false}
   schema "countries" do
     has_many :currencies, Currency, on_delete: :delete_all, foreign_key: :country_code
     field :flag, :string
     field :name, :string
-    field :code, :string
     field :region, :string
 
     timestamps()

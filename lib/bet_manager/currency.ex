@@ -5,10 +5,10 @@ defmodule BetManager.Currency do
   alias BetManager.Country
   alias BetManager.Repo
 
+  @primary_key {:code, :string, autogenerate: false}
   schema "currencies" do
     belongs_to :country, Country, foreign_key: :country_code, references: :code, type: :string
     field :name, :string
-    field :code, :string
     field :symbol, :string
     field :name_plural, :string
     field :decimal_digits, :integer
@@ -20,8 +20,24 @@ defmodule BetManager.Currency do
   @doc false
   def changeset(currency, attrs) do
     currency
-    |> cast(attrs, [:name, :symbol, :code, :name_plural, :decimal_digits, :rounding, :country_code])
-    |> validate_required([:name, :symbol, :code, :name_plural, :decimal_digits, :rounding, :country_code])
+    |> cast(attrs, [
+      :name,
+      :symbol,
+      :code,
+      :name_plural,
+      :decimal_digits,
+      :rounding,
+      :country_code
+    ])
+    |> validate_required([
+      :name,
+      :symbol,
+      :code,
+      :name_plural,
+      :decimal_digits,
+      :rounding,
+      :country_code
+    ])
     |> unique_constraint(:code)
   end
 
@@ -32,18 +48,22 @@ defmodule BetManager.Currency do
 
   def list_currencies_formatted do
     list_currencies()
-    |> IO.inspect()
     |> Enum.map(fn x ->
-      %{code: x.code,
+      %{
+        code: x.code,
         name: x.name,
         name_plural: x.name_plural,
         decimal_digits: x.decimal_digits,
         rounding: x.rounding,
         symbol: x.symbol,
-        country: %{code: x.country.code,
-                 name: x.country.name,
-                 flag: x.country.flag,
-                 region: x.country.region}} end)
+        country: %{
+          code: x.country.code,
+          name: x.country.name,
+          flag: x.country.flag,
+          region: x.country.region
+        }
+      }
+    end)
   end
 
   def get_currency!(id), do: Repo.get!(Currency, id)

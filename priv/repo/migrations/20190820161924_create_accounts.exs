@@ -3,11 +3,11 @@ defmodule BetManager.Repo.Migrations.CreateAccounts do
 
   def change do
     create table(:accounts) do
-      add :name, :string
-      add :balance, :float
-      add :user_id, references(:users, on_delete: :nothing)
-      add :bookmaker_id, references(:bookmakers, on_delete: :nothing)
-      add :currency_code, references(:currencies, on_delete: :nothing)
+      add :name, :string, null: false
+      add :balance, :float, null: false
+      add :user_id, references(:users, on_delete: :nothing), null: false
+      add :bookmaker_id, references(:bookmakers, on_delete: :nothing), null: false
+      add :currency_code, references(:currencies, on_delete: :nothing, type: :string, column: :code), null: false
 
       timestamps()
     end
