@@ -1,40 +1,40 @@
-defmodule BetManagerWeb.BookmakerController do
+defmodule BetManagerWeb.TipsterController do
   use BetManagerWeb, :controller
-  alias BetManager.Bookmaker
+  alias BetManager.Tipster
 
-  def create(conn, %{"name" => name, "logo" => logo}) do
+  def create(conn, %{"name" => name}) do
     user = conn |> current_user!()
 
-    case Bookmaker.create_bookmaker(%{"name" => name, "logo" => logo, "user_id" => user.id}) do
-      {:ok, bookmaker} ->
+    case Tipster.create_tipster(%{"name" => name, "user_id" => user.id}) do
+      {:ok, tipster} ->
         conn
         |> put_status(:ok)
-        |> render("show.json", bookmaker)
+        |> render("show.json", tipster)
 
       {:error, reason} ->
         conn |> send_json_resp(%{"status" => "error", "message" => translate_errors(reason)})
     end
   end
 
-  def update(conn, %{"id" => id, "bookmaker" => %{"name" => name, "logo" => logo}}) do
+  def update(conn, %{"id" => id, "tipster" => %{"name" => name}}) do
     case conn |> current_user!() do
       nil ->
         conn |> send_default_error_resp()
 
       user ->
-        bookmaker =
+        tipster =
           id
           |> String.to_integer()
-          |> Bookmaker.get_bookmaker!()
+          |> Tipster.get_tipster!()
 
-        bookmaker_user = bookmaker.user_id
+        tipster_user = tipster.user_id
 
         case user.id do
-          new_user when new_user == bookmaker_user ->
-            case Bookmaker.update_bookmaker(bookmaker, %{"name" => name, "logo" => logo}) do
-              {:ok, %Bookmaker{} = new_bookmaker} ->
+          new_user when new_user == tipster_user ->
+            case Tipster.update_tipster(tipster, %{"name" => name}) do
+              {:ok, %Tipster{} = new_tipster} ->
                 conn
-                |> render("show.json", new_bookmaker)
+                |> render("show.json", new_tipster)
 
               {:error, reason} ->
                 conn
@@ -53,16 +53,16 @@ defmodule BetManagerWeb.BookmakerController do
         conn |> send_default_error_resp()
 
       user ->
-        bookmaker =
+        tipster =
           id
           |> String.to_integer()
-          |> Bookmaker.get_bookmaker!()
+          |> Tipster.get_tipster!()
 
-        bookmaker_user = bookmaker.user_id
+        tipster_user = tipster.user_id
 
         case user.id do
-          value when value == bookmaker_user or bookmaker_user == nil ->
-            conn |> render("show.json", bookmaker)
+          value when value == tipster_user ->
+            conn |> render("show.json", tipster)
 
           _ ->
             conn |> send_default_error_resp()
@@ -76,8 +76,8 @@ defmodule BetManagerWeb.BookmakerController do
         conn |> send_default_error_resp()
 
       user ->
-        bookmakers = Bookmaker.bookmakers_by_user_formatted(user.id)
-        conn |> render("index.json", %{data: bookmakers})
+        tipsters = Tipster.tipsters_by_user_formatted(user.id)
+        conn |> render("index.json", %{data: tipsters})
     end
   end
 
@@ -87,16 +87,16 @@ defmodule BetManagerWeb.BookmakerController do
         conn |> send_default_error_resp()
 
       {:ok, current_user} ->
-        case Bookmaker.get_bookmaker!(id) do
+        case Tipster.get_tipster!(id) do
           nil ->
             conn |> send_default_error_resp()
 
-          bookmaker ->
-            bookmaker_user = bookmaker.user_id
+          tipster ->
+            tipster_user = tipster.user_id
 
             case current_user.id do
-              new_user when new_user == bookmaker_user ->
-                with {:ok, %Bookmaker{} = _} <- Bookmaker.delete_bookmaker(bookmaker) do
+              new_user when new_user == tipster_user ->
+                with {:ok, %Tipster{} = _} <- Tipster.delete_tipster(tipster) do
                   conn |> send_default_success_resp()
                 end
 

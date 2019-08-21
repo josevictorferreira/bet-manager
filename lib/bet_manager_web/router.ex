@@ -14,13 +14,16 @@ defmodule BetManagerWeb.Router do
 
     get "/countries", CountryController, :index
     get "/currencies", CurrencyController, :index
+
     scope "/sessions" do
       delete "/sign_out", SessionController, :delete
       post "/revoke", SessionController, :revoke
     end
+
     resources "/accounts", AccountController, except: [:new, :edit]
     resources "/users", UserController, except: [:new, :create, :index, :edit]
     resources "/bookmakers", BookmakerController, except: [:new, :edit]
+    resources "/tipsters", TipsterController, except: [:new, :edit]
   end
 
   scope "/api", BetManagerWeb do
@@ -29,7 +32,7 @@ defmodule BetManagerWeb.Router do
     scope "/sessions" do
       post "/sign_in", SessionController, :create
     end
+
     post "/users", UserController, :create
   end
-
 end
