@@ -14,6 +14,7 @@ defmodule BetManagerWeb.Router do
 
     get "/countries", CountryController, :index
     get "/currencies", CurrencyController, :index
+    get "/sports", SportController, :index
 
     scope "/sessions" do
       delete "/sign_out", SessionController, :delete

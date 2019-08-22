@@ -12,7 +12,10 @@
 
 alias BetManager.SeedsCountry
 alias BetManager.SeedsCurrency
+alias BetManager.SeedsSport
 
-SeedsCountry.seed!
+SeedsCountry.seed!()
 
-SeedsCurrency.seed!
+SeedsCurrency.seed!()
+
+SeedsSport.seed!()
