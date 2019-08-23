@@ -1,19 +1,16 @@
 # BetManager
 
-To start your Phoenix server:
+## Setup
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+  * Create a `.env` file in the root folder, edit the variables like below.
+      ```
+        PORT=4000
+        MIX_ENV=dev
+        DB_USER=postgres
+        DB_PASSWORD=postgres
+        DB_DATABASE=bet_manager_dev
+        DB_DATABASE_TEST=bet_manager_test
+        DB_HOST=db
+        DB_POOL=10
+      ```
+  * Run the application with `docker-compose up --build`
