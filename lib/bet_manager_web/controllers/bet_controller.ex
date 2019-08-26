@@ -1,6 +1,7 @@
 defmodule BetManagerWeb.BetController do
   use BetManagerWeb, :controller
   alias BetManager.Bet
+  alias BetManager.Repo
 
   @default_params %{"result" => "undefined"}
 
@@ -19,9 +20,13 @@ defmodule BetManagerWeb.BetController do
            "user_id" => user.id
          }) do
       {:ok, bet} ->
+        new_bet =
+          bet
+          |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
+
         conn
         |> put_status(:ok)
-        |> render("show.json", bet)
+        |> render("show.json", new_bet)
 
       {:error, reason} ->
         conn |> send_json_resp(%{"status" => "error", "message" => translate_errors(reason)})
@@ -64,8 +69,12 @@ defmodule BetManagerWeb.BetController do
                    "sport_id" => sport_id
                  }) do
               {:ok, %Bet{} = new_bet} ->
+                bet_values =
+                  new_bet
+                  |> Repo.preload([:user, :tipster, :sport, account: [currency: :country]])
+
                 conn
-                |> render("show.json", new_bet)
+                |> render("show.json", bet_values)
 
               {:error, reason} ->
                 conn
