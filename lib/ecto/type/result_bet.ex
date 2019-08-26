@@ -11,6 +11,10 @@ defmodule Ecto.Type.ResultBet do
     {:ok, convert_result_to_atom(value)}
   end
 
+  def cast(value) when is_string(value) do
+    {:ok, convert_result_to_atom(value)}
+  end
+
   def cast(_), do: :error
 
   def load(data) when is_integer(data) do
@@ -31,6 +35,7 @@ defmodule Ecto.Type.ResultBet do
 
   defp convert_result_to_integer(atom) do
     case atom do
+      :undefined -> nil
       :lose -> 0
       :win -> 1
       :refund -> 2
@@ -42,11 +47,24 @@ defmodule Ecto.Type.ResultBet do
 
   defp convert_result_to_atom(value) do
     case value do
+      nil -> :undefined
       0 -> :lose
       1 -> :win
       2 -> :refund
       3 -> :half_win
       4 -> :half_lost
+      _ -> :error
+    end
+  end
+
+  defp convert_result_to_atom(value) when is_string(value) do
+    case value do
+      "undefined" -> :undefined
+      "lose" -> :lose
+      "win" -> :win
+      "refund" -> :refund
+      "half win" -> :half_win
+      "half lost" -> :half_lost
       _ -> :error
     end
   end
