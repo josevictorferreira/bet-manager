@@ -25,6 +25,7 @@ defmodule BetManagerWeb.Router do
     resources "/users", UserController, except: [:new, :create, :index, :edit]
     resources "/bookmakers", BookmakerController, except: [:new, :edit]
     resources "/tipsters", TipsterController, except: [:new, :edit]
+    resources "/bets", BetController, except: [:new, :edit]
   end
 
   scope "/api", BetManagerWeb do
