@@ -52,6 +52,15 @@ defmodule BetManager.Account do
     )
   end
 
+  def account_ids_by_user(user_id) do
+    query =
+      from r in Account,
+        where: r.user_id == ^user_id,
+        select: r.id
+
+    query |> Repo.all()
+  end
+
   def accounts_by_user_formatted(user_id) do
     user_id
     |> list_accounts_by_user()

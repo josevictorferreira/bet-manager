@@ -8,6 +8,7 @@ defmodule BetManagerWeb.BetView do
       odd: bet.odd,
       value: bet.value,
       result: to_string(bet.result),
+      event_date: bet.event_date,
       sport: %{
         name: bet.sport.name
       },
@@ -41,7 +42,7 @@ defmodule BetManagerWeb.BetView do
     }
   end
 
-  def render("indebet.json", bets) do
+  def render("index.json", bets) do
     %{status: "success", data: bets.data}
   end
 end

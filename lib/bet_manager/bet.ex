@@ -18,6 +18,7 @@ defmodule BetManager.Bet do
     field :odd, :float
     field :result, Ecto.Type.ResultBet
     field :value, :float
+    field :event_date, :utc_datetime
 
     timestamps()
   end
@@ -30,21 +31,55 @@ defmodule BetManager.Bet do
       :odd,
       :value,
       :result,
+      :event_date,
       :tipster_id,
       :account_id,
       :user_id,
       :sport_id
     ])
-    |> validate_required([:description, :odd, :value, :account_id, :user_id, :sport_id])
+    |> validate_required([
+      :description,
+      :odd,
+      :value,
+      :event_date,
+      :account_id,
+      :user_id,
+      :sport_id
+    ])
+    |> validate_user_tipster(:tipster_id)
+    |> validate_user_account(:account_id)
+  end
+
+  def validate_user_account(changeset, :account_id, options \\ []) do
+    {_, user_id} = changeset |> fetch_field(:user_id)
+
+    validate_change(changeset, :account_id, fn _, account_id ->
+      case Account.account_ids_by_user(user_id) |> Enum.member?(account_id) do
+        true -> []
+        false -> [{:account_id, options[:message] || "Invalid account id."}]
+      end
+    end)
+  end
+
+  def validate_user_tipster(changeset, :tipster_id, options \\ []) do
+    {_, user_id} = changeset |> fetch_field(:user_id)
+
+    validate_change(changeset, :tipster_id, fn _, tipster_id ->
+      case Tipster.tipsters_ids_by_user(user_id) |> Enum.member?(tipster_id) do
+        true -> []
+        false -> [{:tipster_id, options[:message] || "Invalid tipster id."}]
+      end
+    end)
   end
 
   def list_bets do
     Repo.all(Bet)
+    |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
   def get_bet!(id) do
     Repo.get!(Bet, id)
-    |> Repo.preload([:user, :tipster, :sport, account: [currency: :country]])
+    |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
   def create_bet(attrs \\ %{}) do
@@ -68,7 +103,9 @@ defmodule BetManager.Bet do
       from r in Bet,
         where: r.user_id == ^user_id
 
-    query |> Repo.all()
+    query
+    |> Repo.all()
+    |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
   def bets_by_user_formatted(user_id) do
@@ -81,6 +118,7 @@ defmodule BetManager.Bet do
         odd: x.odd,
         value: x.value,
         result: to_string(x.result),
+        event_date: x.event_date,
         sport: %{
           name: x.sport.name
         },

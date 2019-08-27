@@ -55,6 +55,15 @@ defmodule BetManager.Tipster do
     query |> Repo.all()
   end
 
+  def tipsters_ids_by_user(user_id) do
+    query =
+      from r in Tipster,
+        where: r.user_id == ^user_id,
+        select: r.id
+
+    query |> Repo.all()
+  end
+
   def tipsters_by_user_formatted(user_id) do
     user_id
     |> Tipster.tipsters_by_user()

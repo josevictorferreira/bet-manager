@@ -14,6 +14,7 @@ defmodule BetManagerWeb.BetController do
            "odd" => new_params["odd"],
            "result" => new_params["result"],
            "value" => new_params["value"],
+           "event_date" => new_params["event_date"],
            "tipster_id" => new_params["tipster_id"],
            "account_id" => new_params["account_id"],
            "sport_id" => new_params["sport_id"],
@@ -33,23 +34,16 @@ defmodule BetManagerWeb.BetController do
     end
   end
 
-  def update(conn, %{
-        "id" => id,
-        "bet" => %{
-          "description" => description,
-          "odd" => odd,
-          "result" => result,
-          "value" => value,
-          "tipster_id" => tipster_id,
-          "account_id" => account_id,
-          "sport_id" => sport_id
-        }
-      }) do
+  def update(conn, %{"id" => id, "bet" => %{} = params}) do
     case conn |> current_user!() do
       nil ->
         conn |> send_default_error_resp()
 
       user ->
+        new_params =
+          params
+          |> Map.delete("user_id")
+
         bet =
           id
           |> String.to_integer()
@@ -59,19 +53,16 @@ defmodule BetManagerWeb.BetController do
 
         case user.id do
           new_user when new_user == bet_user ->
-            case Bet.update_bet(bet, %{
-                   "description" => description,
-                   "odd" => odd,
-                   "result" => result,
-                   "value" => value,
-                   "tipster_id" => tipster_id,
-                   "account_id" => account_id,
-                   "sport_id" => sport_id
-                 }) do
+            case Bet.update_bet(bet, new_params) do
               {:ok, %Bet{} = new_bet} ->
                 bet_values =
                   new_bet
-                  |> Repo.preload([:user, :tipster, :sport, account: [currency: :country]])
+                  |> Repo.preload([
+                    :user,
+                    :tipster,
+                    :sport,
+                    account: [:bookmaker, currency: :country]
+                  ])
 
                 conn
                 |> render("show.json", bet_values)
