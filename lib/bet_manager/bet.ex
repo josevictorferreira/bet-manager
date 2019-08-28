@@ -48,7 +48,28 @@ defmodule BetManager.Bet do
     ])
     |> validate_user_tipster(:tipster_id)
     |> validate_user_account(:account_id)
+    # |> check_balance()
   end
+
+  # def check_balance(changeset) do
+  #   when get_change(changeset, :odd) != nil or
+  #        get_change(changeset, :value) != nil or
+  #        get_change(changeset, :result) != nil or
+  #        get_change(changeset, :event_date) != nil or
+  #        get_change(changeset, :account_id) != nil do
+  #     force_change(changeset, :balance, calculate_balance())
+  #   end
+  # end
+
+  # def calculate_balance() do
+  #   bets =
+  #     Bet
+  #     |> order_by(:asc, :event_date)
+  #     |> Repo.All()
+  #     |> Enum.reduce(fn bet ->
+  #     end)
+
+  # end
 
   def validate_user_account(changeset, :account_id, options \\ []) do
     {_, user_id} = changeset |> fetch_field(:user_id)
@@ -73,7 +94,9 @@ defmodule BetManager.Bet do
   end
 
   def list_bets do
-    Repo.all(Bet)
+    Bet
+    |> order_by(:asc, :event_date)
+    |> Repo.All()
     |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
