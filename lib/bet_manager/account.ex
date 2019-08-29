@@ -7,8 +7,10 @@ defmodule BetManager.Account do
   alias BetManager.Bookmaker
   alias BetManager.Currency
   alias BetManager.Repo
+  alias BetManager.Transaction
 
   schema "accounts" do
+    has_many :transactions, Transaction, on_delete: :delete_all
     belongs_to :user, User
     belongs_to :bookmaker, Bookmaker
     belongs_to :currency, Currency, foreign_key: :currency_code, references: :code, type: :string

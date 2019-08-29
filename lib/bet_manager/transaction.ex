@@ -28,9 +28,11 @@ defmodule BetManager.Transaction do
 
   def list_transactions_by_user(user_id) do
     query =
-      from r in Transaction,
-        preload: [:account]
-        where: r.account.user_id == ^user_id
+      from t in Transaction,
+        join: a in Account,
+        where: t.account_id == a.id,
+        where: a.user_id == ^user_id,
+        preload: [account: [:bookmaker, currency: :country]]
 
     query |> Repo.all()
   end
@@ -38,6 +40,7 @@ defmodule BetManager.Transaction do
   def get_transaction!(id) do
     Transaction
     |> Repo.get!(id)
+    |> Repo.preload(account: [:bookmaker, currency: :country])
   end
 
   def create_transaction(attrs \\ %{}) do

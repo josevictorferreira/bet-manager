@@ -2,6 +2,7 @@ defmodule BetManagerWeb.TransactionController do
   use BetManagerWeb, :controller
   alias BetManager.Transaction
   alias BetManager.Account
+  alias BetManager.Repo
 
   def create(conn, %{"value" => value, "type" => type, "date" => date, "account_id" => account_id}) do
     case conn |> current_user!() |> account_same_user?(account_id) do
@@ -13,9 +14,13 @@ defmodule BetManagerWeb.TransactionController do
                "account_id" => account_id
              }) do
           {:ok, transaction} ->
+            new_transaction =
+              transaction
+              |> Repo.preload(account: [:bookmaker, currency: :country])
+
             conn
             |> put_status(:ok)
-            |> render("show.json", transaction)
+            |> render("show.json", new_transaction)
 
           {:error, reason} ->
             conn
@@ -34,9 +39,13 @@ defmodule BetManagerWeb.TransactionController do
       true ->
         case Transaction.update_transaction(transaction, transaction_params) do
           {:ok, %Transaction{} = new_transaction} ->
+            full_transaction =
+              new_transaction
+              |> Repo.preload(account: [:bookmaker, currency: :country])
+
             conn
             |> put_status(:ok)
-            |> render("show.json", new_transaction)
+            |> render("show.json", full_transaction)
 
           {:error, reason} ->
             conn

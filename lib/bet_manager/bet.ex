@@ -48,6 +48,7 @@ defmodule BetManager.Bet do
     ])
     |> validate_user_tipster(:tipster_id)
     |> validate_user_account(:account_id)
+
     # |> check_balance()
   end
 
@@ -95,8 +96,8 @@ defmodule BetManager.Bet do
 
   def list_bets do
     Bet
-    |> order_by(:asc, :event_date)
-    |> Repo.All()
+    |> Repo.order_by(:asc, :event_date)
+    |> Repo.all()
     |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
