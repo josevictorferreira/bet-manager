@@ -8,9 +8,11 @@ defmodule BetManager.Account do
   alias BetManager.Currency
   alias BetManager.Repo
   alias BetManager.Transaction
+  alias BetManager.Bet
 
   schema "accounts" do
     has_many :transactions, Transaction, on_delete: :delete_all
+    has_many :bets, Bet, on_delete: :delete_all
     belongs_to :user, User
     belongs_to :bookmaker, Bookmaker
     belongs_to :currency, Currency, foreign_key: :currency_code, references: :code, type: :string
@@ -35,15 +37,69 @@ defmodule BetManager.Account do
 
   def set_balance(changeset) do
     balance = get_field(changeset, :balance)
+    account_id = get_field(changeset, :id)
 
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{initial_balance: initial_balance}}
       when initial_balance > 0.0 and balance == 0.0 ->
-        put_change(changeset, :balance, initial_balance)
-
+        Transaction.create_transaction(%{value: initial_balance, type: "deposit", date: DateTime.utc_now() |> DateTime.to_string(), account_id: account_id})
+        update_balance(changeset)
       _ ->
         changeset
     end
+  end
+
+  def update_balance(changeset) do
+    balance =
+      changeset
+      |> get_field(:id)
+      |> list_account_movements()
+      |> calculate_balance()
+    put_change(changeset, :balance, balance)
+    changeset
+  end
+
+  def update_account_balance(account_id) do
+    account = get_account!(account_id)
+    new_balance = account_id
+    |> list_account_movements(account_id)
+    |> calculate_balance()
+    account_id
+    |> get_account!()
+    |> Transaction.changeset(%{balance: new_balance})
+    |> Repo.update()
+  end
+
+  def calculate_balance(movements) do
+    Enum.reduce(movements, fn x, bal ->
+      bal += calculate_movement(x)
+    end)
+  end
+
+  def calculate_movement(movement) do
+    case movement do
+      %Bet{} ->
+        Bet.result_bet(movement)
+
+      %Transaction{} ->
+        Transaction.transaction_value(movement)
+    end
+  end
+
+  def list_account_movements(account_id) do
+    account = Account |> Repo.get!(account_id) |> Repo.preload([:transactions, :bets])
+    movements = account.transactions ++ account.bets
+
+    Enum.sort_by(
+      movements,
+      fn x ->
+        if Map.has_key?(x, :event_date) do
+          x.event_date
+        else
+          x.date
+        end
+      end
+    )
   end
 
   def list_accounts_by_user(user_id) do

@@ -48,29 +48,7 @@ defmodule BetManager.Bet do
     ])
     |> validate_user_tipster(:tipster_id)
     |> validate_user_account(:account_id)
-
-    # |> check_balance()
   end
-
-  # def check_balance(changeset) do
-  #   when get_change(changeset, :odd) != nil or
-  #        get_change(changeset, :value) != nil or
-  #        get_change(changeset, :result) != nil or
-  #        get_change(changeset, :event_date) != nil or
-  #        get_change(changeset, :account_id) != nil do
-  #     force_change(changeset, :balance, calculate_balance())
-  #   end
-  # end
-
-  # def calculate_balance() do
-  #   bets =
-  #     Bet
-  #     |> order_by(:asc, :event_date)
-  #     |> Repo.All()
-  #     |> Enum.reduce(fn bet ->
-  #     end)
-
-  # end
 
   def validate_user_account(changeset, :account_id, options \\ []) do
     {_, user_id} = changeset |> fetch_field(:user_id)
@@ -122,6 +100,15 @@ defmodule BetManager.Bet do
     Repo.delete(bet)
   end
 
+  def bets_by_account(account_id) do
+    query =
+      from b in Bet,
+        where: b.account_id == ^account_id
+
+    query
+    |> Repo.all()
+  end
+
   def bets_by_user(user_id) do
     query =
       from r in Bet,
@@ -130,6 +117,17 @@ defmodule BetManager.Bet do
     query
     |> Repo.all()
     |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
+  end
+
+  def result_bet(bet) do
+    case bet.result do
+      :undefined -> -bet.value
+      :win -> bet.value * bet.odd
+      :lose -> -bet.value
+      :refund -> 0.0
+      :half_win -> (bet.value * bet.odd - bet.value) / 2.0
+      :half_lose -> -(bet.value / 2.0)
+    end
   end
 
   def bets_by_user_formatted(user_id) do

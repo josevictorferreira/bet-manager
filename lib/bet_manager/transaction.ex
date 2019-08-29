@@ -37,6 +37,14 @@ defmodule BetManager.Transaction do
     query |> Repo.all()
   end
 
+  def list_transactions_by_account(account_id) do
+    query =
+      from t in Transaction,
+        where: t.account_id == ^account_id
+
+    query |> Repo.all()
+  end
+
   def get_transaction!(id) do
     Transaction
     |> Repo.get!(id)
