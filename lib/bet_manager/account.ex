@@ -42,8 +42,13 @@ defmodule BetManager.Account do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{initial_balance: initial_balance}}
       when initial_balance > 0.0 and balance == 0.0 ->
-        Transaction.create_transaction(%{value: initial_balance, type: "deposit", date: DateTime.utc_now() |> DateTime.to_string(), account_id: account_id})
-        update_balance(changeset)
+        Transaction.create_transaction(%{
+          value: initial_balance,
+          type: "deposit",
+          date: DateTime.utc_now() |> DateTime.to_string(),
+          account_id: account_id
+        })
+
       _ ->
         changeset
     end
@@ -55,24 +60,26 @@ defmodule BetManager.Account do
       |> get_field(:id)
       |> list_account_movements()
       |> calculate_balance()
+
     put_change(changeset, :balance, balance)
     changeset
   end
 
   def update_account_balance(account_id) do
-    account = get_account!(account_id)
-    new_balance = account_id
-    |> list_account_movements(account_id)
-    |> calculate_balance()
+    new_balance =
+      account_id
+      |> Account.list_account_movements()
+      |> Account.calculate_balance()
+
     account_id
     |> get_account!()
-    |> Transaction.changeset(%{balance: new_balance})
+    |> Account.changeset(%{balance: new_balance})
     |> Repo.update()
   end
 
   def calculate_balance(movements) do
-    Enum.reduce(movements, fn x, bal ->
-      bal += calculate_movement(x)
+    Enum.reduce(movements, 0, fn x, bal ->
+      bal + calculate_movement(x)
     end)
   end
 
@@ -87,6 +94,7 @@ defmodule BetManager.Account do
   end
 
   def list_account_movements(account_id) do
+    IO.inspect(account_id)
     account = Account |> Repo.get!(account_id) |> Repo.preload([:transactions, :bets])
     movements = account.transactions ++ account.bets
 

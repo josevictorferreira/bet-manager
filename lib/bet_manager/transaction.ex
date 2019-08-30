@@ -37,6 +37,13 @@ defmodule BetManager.Transaction do
     query |> Repo.all()
   end
 
+  def transaction_value(transaction) do
+    case transaction.type do
+      "deposit" -> transaction.value
+      "withdraw" -> -transaction.value
+    end
+  end
+
   def list_transactions_by_account(account_id) do
     query =
       from t in Transaction,

@@ -121,6 +121,7 @@ defmodule BetManager.Bet do
 
   def result_bet(bet) do
     case bet.result do
+      nil -> -bet.value
       :undefined -> -bet.value
       :win -> bet.value * bet.odd
       :lose -> -bet.value
