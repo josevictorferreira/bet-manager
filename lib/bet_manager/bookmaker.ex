@@ -72,4 +72,8 @@ defmodule BetManager.Bookmaker do
       }
     end)
   end
+
+  def delete_all do
+    Repo.delete_all(Bookmaker)
+  end
 end
