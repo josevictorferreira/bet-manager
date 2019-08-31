@@ -1,4 +1,4 @@
-defmodule BetManager.SeedsSport do
+defmodule BetManager.Seeds.SeedsSport do
   alias BetManager.Sport
 
   def seed! do

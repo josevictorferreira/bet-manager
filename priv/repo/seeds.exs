@@ -10,10 +10,10 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias BetManager.SeedsCountry
-alias BetManager.SeedsCurrency
-alias BetManager.SeedsSport
-alias BetManager.SeedsBookmaker
+alias BetManager.Seeds.SeedsCountry
+alias BetManager.Seeds.SeedsCurrency
+alias BetManager.Seeds.SeedsSport
+alias BetManager.Seeds.SeedsBookmaker
 
 SeedsCountry.seed!()
 

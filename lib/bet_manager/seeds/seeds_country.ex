@@ -1,4 +1,4 @@
-defmodule BetManager.SeedsCountry do
+defmodule BetManager.Seeds.SeedsCountry do
   alias BetManager.Country
 
   def seed! do

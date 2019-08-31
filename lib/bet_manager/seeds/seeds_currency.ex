@@ -1,4 +1,4 @@
-defmodule BetManager.SeedsCurrency do
+defmodule BetManager.Seeds.SeedsCurrency do
   alias BetManager.Currency
 
   def seed! do
