@@ -1,6 +1,5 @@
 defmodule BetManager.Services.AccountMovement do
   alias Ecto.Multi
-  import Ecto
   alias BetManager.Bet
   alias BetManager.Transaction
   alias BetManager.Account
@@ -21,7 +20,6 @@ defmodule BetManager.Services.AccountMovement do
     Multi.new()
     |> Multi.insert(:transaction, changeset)
     |> Multi.update(:account, fn %{transaction: transaction} ->
-      IO.inspect(transaction)
       Account.update_account_balance(transaction.account_id)
     end)
   end

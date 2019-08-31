@@ -65,5 +65,5 @@ config :bet_manager, BetManager.Repo,
   username: System.get_env("DB_USER") || "postgres",
   password: System.get_env("DB_PASSWORD") || "postgres",
   database: System.get_env("DB_DATABASE") || "bet_manager_dev",
-  hostname: System.get_env("DB_HOST") || "172.17.0.1",
+  hostname: System.get_env("DB_HOST") || "localhost", #"172.17.0.1",
   pool_size: db_pool

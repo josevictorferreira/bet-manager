@@ -73,10 +73,12 @@ defmodule BetManager.Bet do
   end
 
   def list_bets do
-    Bet
-    |> Repo.order_by(:asc, :event_date)
+    query =
+      from b in Bet,
+        order_by: [asc: :event_date],
+        preload: [:user, :tipster, :sport, account: [:bookmaker, currency: :country]]
+    query
     |> Repo.all()
-    |> Repo.preload([:user, :tipster, :sport, account: [:bookmaker, currency: :country]])
   end
 
   def get_bet!(id) do
