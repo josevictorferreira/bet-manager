@@ -18,7 +18,7 @@ defmodule BetManager.Bookmaker do
   def changeset(bookmaker, attrs) do
     bookmaker
     |> cast(attrs, [:name, :logo, :user_id])
-    |> validate_required([:name, :logo, :user_id])
+    |> validate_required([:name, :logo])
     |> unique_constraint(:name)
     |> validate_format(
       :logo,

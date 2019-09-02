@@ -2,9 +2,9 @@ defmodule BetManager.Seeds.SeedsBookmaker do
   alias BetManager.Bookmaker
 
   def seed! do
-    custom_seed_data
+    custom_seed_data()
     |> Enum.each(fn x ->
-      Bookmaker.create_bookmaker(x)
+      {:ok, _} = Bookmaker.create_bookmaker(x)
     end)
   end
 

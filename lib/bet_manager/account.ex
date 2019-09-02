@@ -32,12 +32,11 @@ defmodule BetManager.Account do
     |> validate_number(:balance, greater_than_or_equal_to: 0.0)
     |> validate_length(:name, min: 2, max: 50)
     |> assoc_constraint(:bookmaker)
-    |> set_balance()
   end
 
   def set_balance(changeset) do
-    balance = get_field(changeset, :balance)
-    account_id = get_field(changeset, :id)
+    {_, balance} = fetch_field(changeset, :balance)
+    {_, account_id} = fetch_field(changeset, :id)
 
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{initial_balance: initial_balance}}
@@ -63,6 +62,16 @@ defmodule BetManager.Account do
 
     put_change(changeset, :balance, balance)
     changeset
+  end
+
+  def calculate_and_update_balance(account) do
+    new_balance =
+      account.id
+      |> Account.list_account_movements()
+      |> Account.calculate_balance()
+    account
+    |> Account.changeset(%{balance: new_balance})
+    |> Repo.update()
   end
 
   def update_account_balance(account_id) do
