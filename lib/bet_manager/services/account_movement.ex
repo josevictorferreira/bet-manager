@@ -23,22 +23,20 @@ defmodule BetManager.Services.AccountMovement do
   end
 
   def create_bet(params) do
-    account_id = params["account_id"]
-
-    changeset = Bet.changeset(%Bet{}, params)
-
     Multi.new()
-    |> Multi.insert(:bet, changeset)
-    |> Multi.update(:account, Account.update_account_balance(account_id))
+    |> Multi.insert(:bet, Bet.changeset(%Bet{}, params))
+    |> Multi.run(:balance, fn _, %{bet: bet} ->
+      Account.calculate_and_update_balance(bet.account_id)
+    end)
+    |> Repo.transaction()
   end
 
   def create_transaction(params) do
-    changeset = Transaction.changeset(%Transaction{}, params)
-
     Multi.new()
-    |> Multi.insert(:transaction, changeset)
-    |> Multi.update(:account, fn %{transaction: transaction} ->
-      Account.update_account_balance(transaction.account_id)
+    |> Multi.insert(:transaction, Transaction.changeset(%Transaction{}, params))
+    |> Multi.run(:balance, fn _, %{transaction: transaction} ->
+      Account.calculate_and_update_balance(transaction.account_id)
     end)
+    |> Repo.transaction()
   end
 end
