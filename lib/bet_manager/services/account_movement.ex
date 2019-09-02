@@ -17,7 +17,7 @@ defmodule BetManager.Services.AccountMovement do
       })
     end)
     |> Multi.run(:balance, fn _, %{account: account, transaction: _} ->
-      Account.calculate_and_update_balance(account)
+      Account.calculate_and_update_balance(account.id)
     end)
     |> Repo.transaction()
   end

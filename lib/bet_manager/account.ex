@@ -26,7 +26,7 @@ defmodule BetManager.Account do
   @doc false
   def changeset(account, attrs) do
     account
-    |> cast(attrs, [:name, :initial_balance, :bookmaker_id, :currency_code, :user_id])
+    |> cast(attrs, [:name, :initial_balance, :bookmaker_id, :currency_code, :user_id, :balance])
     |> validate_required([:name])
     |> validate_number(:initial_balance, greater_than_or_equal_to: 0.0)
     |> validate_number(:balance, greater_than_or_equal_to: 0.0)
@@ -64,12 +64,13 @@ defmodule BetManager.Account do
     changeset
   end
 
-  def calculate_and_update_balance(account) do
+  def calculate_and_update_balance(account_id) do
     new_balance =
-      account.id
+      account_id
       |> Account.list_account_movements()
       |> Account.calculate_balance()
-    account
+    account_id
+    |> Account.get_account!()
     |> Account.changeset(%{balance: new_balance})
     |> Repo.update()
   end
@@ -103,7 +104,6 @@ defmodule BetManager.Account do
   end
 
   def list_account_movements(account_id) do
-    IO.inspect(account_id)
     account = Account |> Repo.get!(account_id) |> Repo.preload([:transactions, :bets])
     movements = account.transactions ++ account.bets
 

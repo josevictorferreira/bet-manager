@@ -18,14 +18,15 @@ defmodule BetManager.Services.AccountMovementTest do
   test "Check initial balance", state do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
     {:ok, user} = User.create_user(@user_attrs)
-    {:ok, %{account: account, transaction: _, balance: acc_with_balance}} = AccountMovement.create_account(%{
+    {:ok, %{account: _, transaction: _, balance: account}} = AccountMovement.create_account(%{
       user_id: user.id,
       initial_balance: 400.0,
       bookmaker_id: 1,
       name: "Custom Account 1",
       currency_code: "BRL"
     })
-    assert acc_with_balance.balance == 400.0
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 400.0
   end
 
 end
