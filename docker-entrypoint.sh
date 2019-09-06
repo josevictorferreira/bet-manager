@@ -1,3 +1,4 @@
 #!/bin/sh
 
-mix deps.get && mix ecto.create && mix ecto.migrate && mix phx.server
+mix ecto.setup
+mix phx.server

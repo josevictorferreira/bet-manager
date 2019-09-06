@@ -27,11 +27,13 @@ defmodule BetManager.User do
   end
 
   def sign_in(email, password) do
-    case Comeonin.Bcrypt.check_pass(BetManager.Repo.get_by(User, email: email), password) do
+    case Comeonin.Argon2.check_pass(BetManager.Repo.get_by(User, email: email), password) do
       {:ok, user} ->
         token = Authenticator.generate_token(user)
         Repo.insert(Ecto.build_assoc(user, :auth_tokens, %{token: token}))
-      err -> err
+
+      err ->
+        err
     end
   end
 
@@ -42,7 +44,9 @@ defmodule BetManager.User do
           nil -> {:error, :not_found}
           auth_token -> Repo.delete(auth_token)
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -50,8 +54,16 @@ defmodule BetManager.User do
     case Authenticator.get_auth_token(conn) do
       {:ok, token} ->
         case BetManager.Repo.get_by(AuthToken, %{token: token}) do
-          nil -> {:error, :not_found}
-          auth_token -> Repo.update(Ecto.Changeset.change(auth_token, revoked: true, revoked_at: DateTime.truncate(DateTime.utc_now, :second)))
+          nil ->
+            {:error, :not_found}
+
+          auth_token ->
+            Repo.update(
+              Ecto.Changeset.change(auth_token,
+                revoked: true,
+                revoked_at: DateTime.truncate(DateTime.utc_now(), :second)
+              )
+            )
         end
     end
   end
@@ -59,8 +71,8 @@ defmodule BetManager.User do
   def put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-        put_change(changeset, :password_hash,
-        Comeonin.Bcrypt.hashpwsalt(pass))
+        put_change(changeset, :password_hash, Argon2.hash_pwd_salt(pass))
+
       _ ->
         changeset
     end

@@ -30,3 +30,5 @@ bet_manager-*.tar
 /.elixir_ls
 
 .env
+
+/.vscode
