@@ -132,4 +132,39 @@ defmodule BetManager.Services.AccountMovementTest do
     new_account = Account.get_account!(account.id)
     assert new_account.balance == 200.0
   end
+
+  test "Add a win bet and then add a withdraw transaction and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "win"
+    }))
+    {:ok, %{transaction: _, balance: _}} = AccountMovement.create_transaction(%{
+      type: "withdraw",
+      value: 200.0,
+      date: DateTime.utc_now() |> DateTime.to_string(),
+      account_id: account.id
+    })
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 247.50
+  end
+
+  test "Add a bet without result and then add a withdraw transaction and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id
+    }))
+    {:ok, %{transaction: _, balance: _}} = AccountMovement.create_transaction(%{
+      type: "withdraw",
+      value: 200.0,
+      date: DateTime.utc_now() |> DateTime.to_string(),
+      account_id: account.id
+    })
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 175.00
+  end
 end
