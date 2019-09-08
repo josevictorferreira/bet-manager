@@ -129,7 +129,7 @@ defmodule BetManager.Bet do
       :lose -> -bet.value
       :refund -> 0.0
       :half_win -> (bet.value * bet.odd - bet.value) / 2.0
-      :half_lose -> -(bet.value / 2.0)
+      :half_lost -> -(bet.value / 2.0)
     end
   end
 

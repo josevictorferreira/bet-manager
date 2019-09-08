@@ -5,17 +5,24 @@ defmodule BetManager.Services.AccountMovementTest do
   alias BetManager.User
   alias BetManager.Tipster
   alias BetManager.Account
-  alias BetManager.Transaction
   alias BetManager.Services.AccountMovement
 
-  @user_attrs %{email: "custom_test@test.com", password: "Teste123"}
+  @user_attrs %{email: "test@test.com", password: "Test123"}
+  @bet_attrs %{
+    description: "Sao Paulo vs Corinthians - Over 2.5 goals",
+    value: 25,
+    odd: 1.9,
+    event_date: nil,
+    tipster_id: nil,
+    account_id: nil,
+    user_id: nil,
+    sport_id: 1
+  }
 
-  setup_all do
+  setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    Ecto.Adapters.SQL.Sandbox.mode(Repo, :auto)
-
     {:ok, user} = User.create_user(@user_attrs)
-    {:ok, tipster} = Tipster.create_tipster(%{name: "GodOfGambling", user_id: user.id})
+    {:ok, tipster} = Tipster.create_tipster(%{name: "Myself", user_id: user.id})
     {:ok, %{account: account, transaction: transaction, balance: _}} = AccountMovement.create_account(%{
       user_id: user.id,
       initial_balance: 400.0,
@@ -23,53 +30,106 @@ defmodule BetManager.Services.AccountMovementTest do
       name: "Custom Account 1",
       currency_code: "BRL"
     })
-
-    on_exit fn ->
-      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-      Ecto.Adapters.SQL.Sandbox.mode(Repo, :auto)
-      transaction.id
-      |> Transaction.get_transaction!()
-      |> Transaction.delete_transaction()
-      account.id
-      |> Account.get_account!()
-      |> Account.delete_account()
-      tipster.id
-      |> Tipster.get_tipster!()
-      |> Tipster.delete_tipster()
-      user.id
-      |> User.get_user!()
-      |> User.delete_user()
-      :ok
-    end
-
-    {:ok, user: user, account: account, tipster: tipster}
+    [user: user, tipster: tipster, account: account, transaction: transaction]
   end
 
-  test "Check initial balance", state do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    account = state[:account]
+  test "Check initial balance", %{user: _, tipster: _, account: account, transaction: transaction} do
     new_account = Account.get_account!(account.id)
+    assert transaction.type == "deposit"
+    assert transaction.value == 400.0
     assert new_account.balance == 400.0
   end
 
-  test "Add a bet to account", state do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    account = state[:account]
-    tipster = state[:tipster]
-    user = state[:user]
-
-    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(%{
-      description: "Sao Paulo vs Corinthians - Over 2.5 goals",
-      value: 25,
-      odd: 1.9,
+  test "Add a bet to account", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
       event_date: DateTime.utc_now() |> DateTime.to_string,
       tipster_id: tipster.id,
       account_id: account.id,
       user_id: user.id,
-      sport_id: 1
-    })
+    }))
     new_account = Account.get_account!(account.id)
     assert new_account.balance == 375.0
   end
 
+  test "Add a winning bet to a account and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "win"
+    }))
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 447.5
+  end
+
+  test "Add a losing bet to a account and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "lose"
+    }))
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 375.0
+  end
+
+  test "Add a half win bet to a account and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "half win"
+    }))
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 411.25
+  end
+
+  test "Add a half lost bet to a account and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "half lost"
+    }))
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 387.50
+  end
+
+  test "Add a refund bet to a account and check balance", %{user: user, tipster: tipster, account: account, transaction: _} do
+    {:ok, %{bet: _, balance: _}} = AccountMovement.create_bet(Map.merge(@bet_attrs, %{
+      event_date: DateTime.utc_now() |> DateTime.to_string,
+      tipster_id: tipster.id,
+      account_id: account.id,
+      user_id: user.id,
+      result: "refund"
+    }))
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 400.0
+  end
+
+  test "Add a deposit to a account and check balance", %{user: _, tipster: _, account: account, transaction: _} do
+    {:ok, %{transaction: _, balance: _}} = AccountMovement.create_transaction(%{
+      type: "deposit",
+      value: 200.0,
+      date: DateTime.utc_now() |> DateTime.to_string(),
+      account_id: account.id
+    })
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 600.0
+  end
+
+  test "Add a withdraw to a account and check balance", %{user: _, tipster: _, account: account, transaction: _} do
+    {:ok, %{transaction: _, balance: _}} = AccountMovement.create_transaction(%{
+      type: "withdraw",
+      value: 200.0,
+      date: DateTime.utc_now() |> DateTime.to_string(),
+      account_id: account.id
+    })
+    new_account = Account.get_account!(account.id)
+    assert new_account.balance == 200.0
+  end
 end
