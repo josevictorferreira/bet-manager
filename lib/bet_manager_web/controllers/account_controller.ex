@@ -2,6 +2,7 @@ defmodule BetManagerWeb.AccountController do
   use BetManagerWeb, :controller
   alias BetManager.Account
   alias BetManager.Repo
+  alias BetManager.Services.AccountMovement
 
   def create(conn, %{
         "name" => name,
@@ -12,7 +13,7 @@ defmodule BetManagerWeb.AccountController do
     user = conn |> current_user!
     user_id = user.id
 
-    case Account.create_account(%{
+    case AccountMovement.create_account!(%{
            name: name,
            initial_balance: init_balance,
            currency_code: currency_code,
