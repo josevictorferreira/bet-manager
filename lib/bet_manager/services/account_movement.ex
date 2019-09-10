@@ -76,7 +76,7 @@ defmodule BetManager.Services.AccountMovement do
           {:ok, new_bet}
       end
     end)
-    |> Multi.run(:balance_second_account, fn _, %{:ok, value} ->
+    |> Multi.run(:balance_second_account, fn _, _ ->
       if :account_id in attrs do
         Account.calculate_and_update_balance(attrs[:account_id])
       else
