@@ -61,10 +61,36 @@ defmodule BetManager.Services.AccountMovement do
     end
   end
 
+  def update_bet(%Bet{} = bet, attrs) do
+    Multi.new()
+    |> Multi.update(:bet, Bet.changeset(bet, attrs))
+    |> Multi.run(:balance, fn _, %{bet: new_bet} ->
+      change_params = [:odd, :result, :value, :event_date, :account_id]
+      changed = Enum.any?(attrs, fn v -> v in change_params end)
+
+      case changed do
+        true ->
+          Account.calculate_and_update_balance(new_bet.account_id)
+
+        false ->
+          {:ok, new_bet}
+      end
+    end)
+    |> Multi.run(:balance_second_account, fn _, %{:ok, value} ->
+      if :account_id in attrs do
+        Account.calculate_and_update_balance(attrs[:account_id])
+      else
+        {:ok, value}
+      end
+    end)
+    |> Repo.transaction()
+  end
+
   def update_account(%Account{} = account, attrs) do
     Multi.new()
     |> Multi.update(:account, Account.changeset(account, attrs))
     |> Multi.run(:balance, fn param, %{account: new_account} ->
+      balance_attrs = []
       IO.inspect(param)
       IO.inspect(new_account)
     end)
