@@ -40,7 +40,7 @@ defmodule BetManager.Services.AccountMovement do
 
   def create_bet!(params) do
     case create_bet(params) do
-      {:ok, account: account, balance: _} -> {:ok, account}
+      {:ok, %{bet: bet, balance: _}} -> {:ok, bet}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -66,7 +66,7 @@ defmodule BetManager.Services.AccountMovement do
     |> Multi.update(:bet, Bet.changeset(bet, attrs))
     |> Multi.run(:balance, fn _, %{bet: new_bet} ->
       change_params = [:odd, :result, :value, :event_date, :account_id]
-      changed = Enum.any?(attrs, fn v -> v in change_params end)
+      changed = Enum.any?(Map.keys(attrs), fn v -> v in change_params end)
 
       case changed do
         true ->
@@ -77,8 +77,10 @@ defmodule BetManager.Services.AccountMovement do
       end
     end)
     |> Multi.run(:balance_second_account, fn _, changes ->
-      if :account_id in attrs do
-        Account.calculate_and_update_balance(attrs[:account_id])
+      if :account_id in Map.keys(attrs) do
+        IO.inspect("Entrou 123")
+        acc = Account.calculate_and_update_balance(attrs[:account_id])
+        IO.inspect(acc)
       else
         {:ok, changes}
       end

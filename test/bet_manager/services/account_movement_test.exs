@@ -271,7 +271,7 @@ defmodule BetManager.Services.AccountMovementTest do
       AccountMovement.create_bet!(
         Map.merge(@bet_attrs, %{
           event_date: DateTime.utc_now() |> DateTime.to_string(),
-          tipster_id: tipster_id,
+          tipster_id: tipster.id,
           account_id: account.id,
           user_id: user.id,
           value: 100.0,
@@ -280,7 +280,7 @@ defmodule BetManager.Services.AccountMovementTest do
         })
       )
 
-    {:ok, _} =
+    {:ok, changes} =
       AccountMovement.update_bet(bet, %{
         account_id: sec_account.id
       })
@@ -288,7 +288,7 @@ defmodule BetManager.Services.AccountMovementTest do
     new_account = Account.get_account!(account.id)
     new_sec_account = Account.get_account!(sec_account.id)
 
-    assert new_account.balance == 400.0
     assert new_sec_account.balance == 900.0
+    assert new_account.balance == 400.0
   end
 end
