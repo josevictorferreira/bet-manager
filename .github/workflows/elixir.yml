@@ -1,0 +1,42 @@
+name: Elixir CI
+
+on: push
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: bitwalker/alpine-elixir-phoenix:latest
+      env:
+        MIX_ENV: test
+
+    services:
+      db:
+        image: postgres:9.6
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        PGDATA: /var/lib/postgresql/data/pgdata
+      ports:
+        - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      env:
+        MIX_ENV: test
+        PORT: 4000
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_DATABASE: bet_manager_dev
+        DB_DATABASE_TEST: bet_manager_test
+        DB_HOST: db
+        DB_POOL: 10
+      run: |
+        mix local.rebar --force
+        mix local.hex --force
+        mix deps.get
+    - name: Run Tests
+      run: mix test
