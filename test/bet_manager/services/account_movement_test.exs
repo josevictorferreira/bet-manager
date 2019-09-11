@@ -76,7 +76,7 @@ defmodule BetManager.Services.AccountMovementTest do
       )
 
     new_account = Account.get_account!(account.id)
-    assert new_account.balance == 447.5
+    assert new_account.balance == 422.5
   end
 
   test "Add a losing bet to a account and check balance", %{
@@ -225,7 +225,7 @@ defmodule BetManager.Services.AccountMovementTest do
       })
 
     new_account = Account.get_account!(account.id)
-    assert new_account.balance == 247.50
+    assert new_account.balance == 222.50
   end
 
   test "Add a bet without result and then add a withdraw transaction and check balance", %{
@@ -280,7 +280,7 @@ defmodule BetManager.Services.AccountMovementTest do
         })
       )
 
-    {:ok, changes} =
+    {:ok, _} =
       AccountMovement.update_bet(bet, %{
         account_id: sec_account.id
       })

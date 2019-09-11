@@ -125,7 +125,7 @@ defmodule BetManager.Bet do
     case bet.result do
       nil -> -bet.value
       :undefined -> -bet.value
-      :win -> bet.value * bet.odd
+      :win -> bet.value * bet.odd - bet.value
       :lose -> -bet.value
       :refund -> 0.0
       :half_win -> (bet.value * bet.odd - bet.value) / 2.0
