@@ -24,14 +24,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Install Dependencies and Setup Database
+    - name: Install Dependencies
       run: |
         apt update
         apt install -y build-essential
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
-    - name: Run Tests
+    - name: Setup Database and Run Tests
       run: |
         mix ecto.setup
         mix test

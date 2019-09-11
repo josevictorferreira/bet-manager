@@ -291,4 +291,12 @@ defmodule BetManager.Services.AccountMovementTest do
     assert new_sec_account.balance == 900.0
     assert new_account.balance == 400.0
   end
+
+  test "Update a existing transaction changing the account from it, check balance from both accounts after",
+       %{user: user, tipster: _, account: account, transaction: _} do
+    {:ok, sec_account} =
+      AccountMovement.create_account!(%{
+        user_id: user.id
+      })
+  end
 end
