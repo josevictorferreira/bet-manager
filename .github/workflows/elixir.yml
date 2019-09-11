@@ -1,7 +1,7 @@
 ---
 name: Elixir CI
 
-on: push
+on: [push, pull_request]
 
 jobs:
   build:
@@ -24,29 +24,20 @@ jobs:
           PGDATA: /var/lib/postgresql/data/pgdata
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Install Dependencies and Setup Database
-        env:
-          MIX_ENV: test
-          PORT: 4000
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_DATABASE: bet_manager_dev
-          DB_DATABASE_TEST: bet_manager_test
-          DB_HOST: db
-          DB_POOL: 10
-        run: |
-          mix deps.get
-          mix ecto.setup
-      - name: Run Tests
-        run: |
-          mix test
-        env:
-          MIX_ENV: test
-          PORT: 4000
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_DATABASE: bet_manager_dev
-          DB_DATABASE_TEST: bet_manager_test
-          DB_HOST: db
-          DB_POOL: 10
+    - uses: actions/checkout@v1
+    - name: Install Dependencies and Setup Database
+      run: |
+        mix deps.get
+    - name: Run Tests
+      run: |
+        mix ecto.setup
+        mix test
+      env:
+        MIX_ENV: test
+        PORT: 4000
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_DATABASE: bet_manager_dev
+        DB_DATABASE_TEST: bet_manager_test
+        DB_HOST: db
+        DB_POOL: 10
