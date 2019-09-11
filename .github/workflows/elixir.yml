@@ -12,7 +12,7 @@ jobs:
       image: elixir:1.9.1-slim
 
     services:
-      db:
+      postgres:
         image: postgres:9.6
         ports:
           - 5432:5432
@@ -20,6 +20,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           PGDATA: /var/lib/postgresql/data/pgdata
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
     steps:
     - uses: actions/checkout@v1
@@ -41,5 +42,5 @@ jobs:
         DB_PASSWORD: postgres
         DB_DATABASE: bet_manager_dev
         DB_DATABASE_TEST: bet_manager_test
-        DB_HOST: db
+        DB_HOST: postgres
         DB_POOL: 10
