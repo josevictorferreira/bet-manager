@@ -24,7 +24,7 @@ defmodule BetManager.Services.AccountMovement do
 
   def create_account!(params) do
     case create_account(params) do
-      {:ok, account: account, transaction: _, balance: _} -> {:ok, account}
+      {:ok, %{account: account, transaction: _, balance: _}} -> {:ok, account}
       {:error, reason} -> {:error, reason}
     end
   end
