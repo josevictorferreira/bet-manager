@@ -325,7 +325,7 @@ defmodule BetManager.Services.AccountMovementTest do
 
   test "Delete a bet and check balance of account after", %{
     user: user,
-    tipster: tipsters,
+    tipster: tipster,
     account: account,
     transaction: _
   } do
