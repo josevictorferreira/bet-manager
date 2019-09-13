@@ -353,12 +353,12 @@ defmodule BetManager.Services.AccountMovementTest do
     transaction: _
   } do
     {:ok, transaction} =
-      AccountMovement.create_transaction!(
+      AccountMovement.create_transaction!(%{
         value: 100.0,
         type: "deposit",
         date: DateTime.utc_now() |> DateTime.to_string(),
         account_id: account.id
-      )
+      })
 
     {:ok, _} = AccountMovement.delete_transaction!(transaction)
     new_account = Account.get_account!(account.id)
