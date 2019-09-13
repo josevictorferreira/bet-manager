@@ -132,8 +132,26 @@ defmodule BetManager.Services.AccountMovement do
 
   def delete_bet!(%Bet{} = bet) do
     case delete_bet(bet) do
-      {:ok, %{delete: bet, balance: _}} -> {:ok, bet}
+      {:ok, %{delete: old_bet, balance: _}} -> {:ok, old_bet}
       {:error, changes} -> changes
+    end
+  end
+
+  def delete_transaction(%Transaction{} = transaction) do
+    account_id = transaction.account_id
+
+    Multi.new()
+    |> Multi.delete(:delete, transaction)
+    |> Multi.run(:balance, fn _, _ ->
+      Account.calculate_and_update_balance(account_id)
+    end)
+    |> Repo.transaction()
+  end
+
+  def delete_transaction!(%Transaction{} = transaction) do
+    case delete_transaction(transaction) do
+      {:ok, %{delete: old_tran, balance: _}} -> {:ok, old_tran}
+      {:error, changes} -> {:error, changes}
     end
   end
 end

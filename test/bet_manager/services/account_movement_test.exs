@@ -322,4 +322,47 @@ defmodule BetManager.Services.AccountMovementTest do
     assert new_sec_account.balance == 900.0
     assert new_account.balance == 400.0
   end
+
+  test "Delete a bet and check balance of account after", %{
+    user: user,
+    tipster: tipsters,
+    account: account,
+    transaction: _
+  } do
+    {:ok, bet} =
+      AccountMovement.create_bet!(
+        Map.merge(@bet_attrs, %{
+          event_date: DateTime.utc_now() |> DateTime.to_string(),
+          tipster_id: tipster.id,
+          account_id: account.id,
+          user_id: user.id,
+          result: "win"
+        })
+      )
+
+    {:ok, _} = AccountMovement.delete_bet!(bet)
+    new_account = Account.get_account!(account.id)
+
+    assert new_account.balance == 400.0
+  end
+
+  test "Delete a transaction and check balance account", %{
+    user: _,
+    tipster: _,
+    account: account,
+    transaction: _
+  } do
+    {:ok, transaction} =
+      AccountMovement.create_transaction!(
+        value: 100.0,
+        type: "deposit",
+        date: DateTime.utc_now() |> DateTime.to_string(),
+        account_id: account.id
+      )
+
+    {:ok, _} = AccountMovement.delete_transaction!(transaction)
+    new_account = Account.get_account!(account.id)
+
+    assert new_account.balance == 400.0
+  end
 end
