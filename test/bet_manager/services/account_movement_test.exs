@@ -296,7 +296,30 @@ defmodule BetManager.Services.AccountMovementTest do
        %{user: user, tipster: _, account: account, transaction: _} do
     {:ok, sec_account} =
       AccountMovement.create_account!(%{
-        user_id: user.id
+        user_id: user.id,
+        initial_balance: 800.0,
+        bookmaker_id: 1,
+        name: "Custom Account 3",
+        currency_code: "BRL"
       })
+
+    {:ok, transaction} =
+      AccountMovement.create_transaction!(%{
+        value: 100.0,
+        type: "deposit",
+        date: DateTime.utc_now() |> DateTime.to_string(),
+        account_id: account.id
+      })
+
+    {:ok, _} =
+      AccountMovement.update_transaction!(transaction, %{
+        account_id: sec_account.id
+      })
+
+    new_account = Account.get_account!(account.id)
+    new_sec_account = Account.get_account!(sec_account.id)
+
+    assert new_sec_account.balance == 900.0
+    assert new_account.balance == 400.0
   end
 end
