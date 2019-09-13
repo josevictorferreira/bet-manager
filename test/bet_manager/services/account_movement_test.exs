@@ -365,4 +365,55 @@ defmodule BetManager.Services.AccountMovementTest do
 
     assert new_account.balance == 400.0
   end
+
+  test "Update a bet odd and check account balance after.", %{
+    user: user,
+    tipster: tipster,
+    account: account,
+    transaction: _
+  } do
+    {:ok, bet} =
+      AccountMovement.create_bet!(
+        Map.merge(@bet_attrs, %{
+          event_date: DateTime.utc_now() |> DateTime.to_string(),
+          tipster_id: tipster.id,
+          account_id: account.id,
+          user_id: user.id,
+          result: "win"
+        })
+      )
+
+    {:ok, _} =
+      AccountMovement.update_bet!(%{
+        odd: 2.50
+      })
+
+    new_account = Account.get_account!(account.id)
+
+    assert new_account.balance == 437.5
+  end
+
+  test "Update a transaction and check account balance after.", %{
+    user: _,
+    tipster: _,
+    account: account,
+    transaction: _
+  } do
+    {:ok, transaction} =
+      AccountMovement.create_transaction!(%{
+        value: 100.0,
+        type: "deposit",
+        date: DateTime.utc_now() |> DateTime.to_string(),
+        account_id: account.id
+      })
+
+    {:ok, _} =
+      AccountMovement.update_transaction!(transaction, %{
+        value: 400.0
+      })
+
+    new_account = Account.get_account!(account.id)
+
+    assert new_account.balance = 800.0
+  end
 end
