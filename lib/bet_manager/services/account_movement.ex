@@ -96,7 +96,7 @@ defmodule BetManager.Services.AccountMovement do
   def update_transaction(%Transaction{} = transaction, attrs) do
     Multi.new()
     |> Multi.update(:transaction, Transaction.changeset(transaction, attrs))
-    |> Multi.run(:balance, fn _, %{transaction: transaction} ->
+    |> Multi.run(:balance, fn _, %{transaction: _} ->
       Account.calculate_and_update_balance(transaction.account_id)
     end)
     |> Multi.run(:balance_second_account, fn _, changes ->
