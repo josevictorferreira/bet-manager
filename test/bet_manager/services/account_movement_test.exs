@@ -384,7 +384,7 @@ defmodule BetManager.Services.AccountMovementTest do
       )
 
     {:ok, _} =
-      AccountMovement.update_bet!(%{
+      AccountMovement.update_bet!(bet, %{
         odd: 2.50
       })
 
