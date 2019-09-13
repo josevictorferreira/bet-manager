@@ -414,6 +414,6 @@ defmodule BetManager.Services.AccountMovementTest do
 
     new_account = Account.get_account!(account.id)
 
-    assert new_account.balance = 800.0
+    assert new_account.balance == 800.0
   end
 end
