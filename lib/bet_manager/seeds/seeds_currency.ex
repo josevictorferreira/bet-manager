@@ -18,10 +18,9 @@ defmodule BetManager.Seeds.SeedsCurrency do
   end
 
   defp get_currencies_from_api do
-    data_api = Application.get_env(:bet_manager, BetManager.SeedsCurrency)[:seed_data]
-    case HTTPoison.get(data_api) do
+    case read_file() do
       {:ok, result} ->
-        {:ok, Poison.decode!(result.body)
+        {:ok, result
               |> Enum.map(fn {_, x} ->
                 %{code: x["code"],
                   name: x["name"],
@@ -32,5 +31,17 @@ defmodule BetManager.Seeds.SeedsCurrency do
                   rounding: x["rounding"]} end)}
       {:error, _} -> {:error, "Unable to reach Currency API."}
     end
+  end
+
+  defp read_file do
+    filepath = file_path()
+    with {:ok, body} <- File.read(filepath),
+         {:ok, json} <- Poison.decode(body), do: {:ok, json}
+  end
+
+  defp file_path do
+    base_dir = File.cwd!
+    filename = Application.get_env(:bet_manager, BetManager.SeedsCurrency)[:seed_file]
+    Path.join([base_dir, 'priv', 'data', filename])
   end
 end

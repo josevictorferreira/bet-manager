@@ -18,10 +18,10 @@ config :bet_manager, BetManagerWeb.Endpoint,
   pubsub: [name: BetManager.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :bet_manager, BetManager.SeedsCountry,
-  seed_data: "https://restcountries.eu/rest/v2/all"
+  seed_file: "countries.json"
 
 config :bet_manager, BetManager.SeedsCurrency,
-  seed_data: "https://gist.githubusercontent.com/josevictorferreira/d16cbcc31c0459ef87d16b6ccd6cbf98/raw/6b648e7126fd0ff28ea90f87c10748304a5264cb/world_currencies.json"
+  seed_file: "currencies.json"
 
 config :bet_manager, BetManager.Endpoint,
   http: [port: System.get_env("PORT") || 4000]
