@@ -22,9 +22,6 @@ defmodule BetManagerWeb.SessionControllerTest do
           "password" => "Test123"
         })
 
-      IO.inspect(user.id)
-      auth_token = AuthToken.get_last_by_user(user.id)
-
       response =
         conn
         |> put_req_header("accept", "application/json")
@@ -33,6 +30,8 @@ defmodule BetManagerWeb.SessionControllerTest do
           "password" => "Test123"
         })
         |> json_response(200)
+
+      auth_token = AuthToken.get_last_by_user(user.id)
 
       %{"data" => %{"token" => token}} = response
 

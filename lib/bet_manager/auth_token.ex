@@ -25,4 +25,9 @@ defmodule BetManager.AuthToken do
     Repo.get_by(AuthToken, %{token: token})
     |> Repo.preload(user: :auth_tokens)
   end
+
+  def get_last_by_user(user_id) do
+    Repo.get_by(AuthToken, %{user_id: user_id})
+    |> Repo.preload(user: :auth_tokens)
+  end
 end

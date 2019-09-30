@@ -27,7 +27,7 @@ defmodule BetManager.User do
   end
 
   def sign_in(email, password) do
-    case Comeonin.Argon2.check_pass(BetManager.Repo.get_by(User, email: email), password) do
+    case Argon2.check_pass(BetManager.Repo.get_by(User, email: email), password) do
       {:ok, user} ->
         token = Authenticator.generate_token(user)
         Repo.insert(Ecto.build_assoc(user, :auth_tokens, %{token: token}))
