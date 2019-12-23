@@ -2,15 +2,17 @@
 version: '3'
 
 services:
-  phoenix:
+  bet-manager-api:
+    image: bet-manager-api
+    container_name: bet-manager-api
     build:
       context: .
       args:
         - phoenix_port=${PORT}
     links:
-      - db
+      - bet-manager-db
     depends_on:
-      - db
+      - bet-manager-db
     ports:
       - "${PORT}:${PORT}"
     volumes:
@@ -24,8 +26,11 @@ services:
       DB_DATABASE_TEST: "${DB_DATABASE_TEST}"
       DB_HOST: "${DB_HOST}"
       DB_POOL: "${DB_POOL}"
-  db:
-    image: postgres:9.6
+    networks:
+      - bet-manager
+  bet-manager-db:
+    container_name: bet-manager-db
+    image: postgres:12.1
     environment:
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
@@ -34,7 +39,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data/pgdata
+    networks:
+      - bet-manager
+
+networks:
+  bet-manager:
+    driver: bridge
 
 volumes:
-  pgdata:
+  db-data:
+    driver: local

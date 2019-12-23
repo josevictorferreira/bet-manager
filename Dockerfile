@@ -10,6 +10,7 @@ COPY . $APP
 
 ADD . .
 
-RUN ["chmod", "+x", "./docker-entrypoint.sh"]
+RUN mix deps.get && \
+    chmod +x ./docker-entrypoint.sh
 
 ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
