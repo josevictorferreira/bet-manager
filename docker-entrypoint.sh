@@ -1,3 +1,4 @@
 #!/bin/sh
 
-mix ecto.migrate && mix phx.server
+mix ecto.setup
+mix phx.server
