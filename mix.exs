@@ -44,7 +44,8 @@ defmodule BetManager.MixProject do
       {:comeonin, "~> 5.1.2"},
       {:argon2_elixir, "~> 2.0.5"},
       {:poison, "~> 3.1"},
-      {:httpoison, "~> 1.5"}
+      {:httpoison, "~> 1.5"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 

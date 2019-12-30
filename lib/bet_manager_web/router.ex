@@ -2,6 +2,7 @@ defmodule BetManagerWeb.Router do
   use BetManagerWeb, :router
 
   pipeline :api do
+    plug CORSPlug, origin: "http://localhost:8082"
     plug :accepts, ["json"]
   end
 
@@ -27,6 +28,12 @@ defmodule BetManagerWeb.Router do
     resources "/tipsters", TipsterController, except: [:new, :edit]
     resources "/bets", BetController, except: [:new, :edit]
     resources "/transactions", TransactionController, except: [:new, :edit]
+    options "/accounts", AccountController, :options
+    options "/users", UserController, :options
+    options "/bookmakers", BookmakerController, :options
+    options "/tipsters", TipsterController, :options
+    options "/bets", BetController, :options
+    options "/transactions", TransactionController, :options
   end
 
   scope "/api", BetManagerWeb do
