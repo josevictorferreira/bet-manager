@@ -32,7 +32,7 @@ defmodule BetManagerWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
 
-  plug CORSPlug, origin: "http://127.0.0.1:8082"
+  plug CORSPlug, origin: "http://localhost:8082"
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
