@@ -32,8 +32,6 @@ defmodule BetManagerWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
 
-  plug CORSPlug, origin: "http://localhost:8082"
-
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
@@ -41,6 +39,12 @@ defmodule BetManagerWeb.Endpoint do
     store: :cookie,
     key: "_bet_manager_key",
     signing_salt: "oKTGB4cd"
+
+  plug Corsica,
+    origins: "http://localhost:8080",
+    allow_credentials: true,
+    allow_headers: ["Content-Type"],
+    log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   plug BetManagerWeb.Router
 end
