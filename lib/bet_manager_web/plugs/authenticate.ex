@@ -26,7 +26,7 @@ defmodule BetManager.Plugs.Authenticate do
 
   defp unauthorized(conn) do
     conn
-    |> send_json_resp(%{status: "error", message: "Unauthorized"})
+    |> send_json_resp(%{status: "error", message: "Unauthorized"}, 401)
     |> halt()
   end
 end
